@@ -3,6 +3,7 @@ class Entity{
         this.position = createVector(x,y);
         this.shape = [[0]];
         this.color = color(0,0,0);
+        this.health = 1;
     }
 
     drawEntity(){
