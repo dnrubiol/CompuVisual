@@ -9,10 +9,19 @@ function setup() {
     cols = width / scl;
     rows = height / scl;
     player = new Player(cols/2,rows-10);
+    
+    // Agregar una nueva fila de aliens
     for (let i = 0; i < 8; i++) {
-        aliens.push(new BackEnemy(i*16 + 2,20));
-        aliens.push(new FrontEnemy(i*16,30));
+        aliens.push(new BackEnemy(i*16 + 2, 10)); // Cambiar la coordenada Y para ajustar la posición de la nueva fila
+        aliens.push(new FirstEnemy(i*16, 20)); // Cambiar la coordenada Y para ajustar la posición de la nueva fila
     }
+  
+    for (let i = 0; i < 8; i++) {
+        aliens.push(new SecondEnemy(i*16 + 2,30));
+        aliens.push(new FrontEnemy(i*16,40));
+    }
+  
+  
     for (let i = 0; i < 4; i++) {
         bunkers.push(new Bunker(i*cols/4+cols/8-8,rows - 30));
     }
