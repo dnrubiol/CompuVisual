@@ -19,6 +19,7 @@ function setup() {
 
 function draw() {
     background(0);
+    textSize(30);
     noStroke();
     if (keyIsPressed) {
         registerAction();
@@ -53,7 +54,9 @@ function draw() {
             //console.log(lasers[i]);
             if (lasers[i].hits(aliens[j])) {
                 lasers[i].remove(); 
-                puntaje += aliens[j].pts;
+                //puntaje += aliens[j].pts;
+                puntaje += 1;
+                //console.log(puntaje);
                 aliens.splice(j, 1);
             } else if (lasers[i].y < 0) {
                 lasers[i].remove();
@@ -71,6 +74,10 @@ function draw() {
     }
 
     frame++;
+
+    translate(600, 40);
+    fill(255, 0, 0);
+    text('Puntaje: ' + puntaje,0, 0);
 }
 
 function registerAction(){
