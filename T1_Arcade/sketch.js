@@ -2,6 +2,8 @@ let scl = 5, cols, rows, player, frame, aliens = [], lasers = [], alienDir, punt
 
 function setup() {
     createCanvas(800, 800);
+    textSize(30);
+    //textAlign(CENTER, CENTER);
     frame = 0;
     cols = width / scl;
     rows = height / scl;
@@ -47,7 +49,9 @@ function draw() {
             console.log(lasers[i]);
             if (lasers[i].hits(aliens[j])) {
                 lasers[i].remove(); 
-                puntaje += aliens[j].pts;
+                //puntaje += aliens[j].pts;
+                puntaje += 1;
+                //console.log(puntaje);
                 aliens.splice(j, 1);
             } else if (lasers[i].y < 0) {
                 lasers[i].remove();
@@ -55,6 +59,9 @@ function draw() {
         }
         if (lasers[i].toDelete === true) lasers.splice(i,1);
     }
+    translate(600, 40);
+    fill(255, 0, 0);
+    text('Puntaje: ' + puntaje,0, 0);
 }
 
 function registerAction(){
