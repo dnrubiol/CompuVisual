@@ -32,6 +32,18 @@ class Laser {
         this.y -= 2;
       }
     }
+    updateAlien() {
+      if (this.isExploded) {
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          this.particles[i].update();
+          if (this.particles[i].lifespan <= 0) {
+            this.particles.splice(i, 1);
+          }
+        }
+      } else {
+        this.y += 2;
+      }
+    }
   
     hits(enemy) {
       if (this.x >= enemy.position.x && this.x <= enemy.position.x + enemy.width
@@ -43,6 +55,8 @@ class Laser {
         return false;
       }
     }
+  
+    
   
     remove() {
       this.toDelete = true;
