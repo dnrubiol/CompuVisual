@@ -1,15 +1,27 @@
 let scl = 5, cols, rows, player, frame, aliens = [], lasers = [], bunkers = [], alienDir, puntaje;
 
+let lastShootTime = 0; // Variable para almacenar el tiempo del último disparo
+let shootDelay = 500; // Retardo en milisegundos entre disparos
+
 function setup() {
     createCanvas(800, 800);
     frame = 0;
     cols = width / scl;
     rows = height / scl;
     player = new Player(cols/2,rows-10);
+    
+    // Agregar una nueva fila de aliens
     for (let i = 0; i < 8; i++) {
-        aliens.push(new BackEnemy(i*16 + 2,20));
-        aliens.push(new FrontEnemy(i*16,30));
+        aliens.push(new BackEnemy(i*16 + 2, 10)); // Cambiar la coordenada Y para ajustar la posición de la nueva fila
+        aliens.push(new FirstEnemy(i*16, 20)); // Cambiar la coordenada Y para ajustar la posición de la nueva fila
     }
+  
+    for (let i = 0; i < 8; i++) {
+        aliens.push(new SecondEnemy(i*16 + 2,30));
+        aliens.push(new FrontEnemy(i*16,40));
+    }
+  
+  
     for (let i = 0; i < 4; i++) {
         bunkers.push(new Bunker(i*cols/4+cols/8-8,rows - 30));
     }
@@ -19,8 +31,7 @@ function setup() {
 
 function draw() {
     background(0);
-    textSize(30);
-    noStroke();
+    noStroke() ;
     if (keyIsPressed) {
         registerAction();
     }
@@ -54,9 +65,7 @@ function draw() {
             //console.log(lasers[i]);
             if (lasers[i].hits(aliens[j])) {
                 lasers[i].remove(); 
-                //puntaje += aliens[j].pts;
-                puntaje += 1;
-                //console.log(puntaje);
+                puntaje += aliens[j].pts;
                 aliens.splice(j, 1);
             } else if (lasers[i].y < 0) {
                 lasers[i].remove();
@@ -74,10 +83,6 @@ function draw() {
     }
 
     frame++;
-
-    translate(600, 40);
-    fill(255, 0, 0);
-    text('Puntaje: ' + puntaje,0, 0);
 }
 
 function registerAction(){
@@ -94,7 +99,11 @@ function registerAction(){
 
 function keyPressed() {
     if (key === " " || keyCode === UP_ARROW) {
-      let laser = new Laser(player.position.x + 3, player.position.y - 1);
-      lasers.push(laser);
+        let currentTime = millis(); // Obtener el tiempo actual
+        if (currentTime - lastShootTime > shootDelay) { // Verificar si ha pasado suficiente tiempo desde el último disparo
+            let laser = new Laser(player.position.x + 3, player.position.y - 1);
+            lasers.push(laser);
+            lastShootTime = currentTime; // Actualizar el tiempo del último disparo
+        }
     }
 }
