@@ -55,10 +55,19 @@ class Laser {
       } else {
         return false;
       }
-    }
-  
-    
-  
+    }  
+
+    hits(player) { ///
+      if (this.x >= player.position.x && this.x <= player.position.x + player.width
+        && this.y >= player.position.y && this.y <= player.position.y + player.height) {
+        this.isExploded = true;
+        this.explode();
+        return true;
+      } else {
+        return false;
+      }
+    }  
+
     remove() {
       this.toDelete = true;
     }

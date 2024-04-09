@@ -46,6 +46,7 @@ function draw() {
   background(0);
   textSize(30);
   noStroke();
+  //console.log("Console");
   if (keyIsPressed) {
     registerAction();
   }
@@ -76,26 +77,26 @@ function draw() {
   for (let i = attacks.length - 1; i >= 0; i--) {
     attacks[i].updateAlien();
     attacks[i].render();
-    if (attacks[i].hits(player)) { 
-        attacks[i].remove();
-        vidas--;
-        console.log(vidas);
-
-      if (vidas > 0) {
-        player.position.x = cols / 2; // Restablece la posición del jugador en el centro
-        player.position.y = rows - 10;
-        invulnerable = true; // Marca al jugador como invulnerable
-        setTimeout(() => {
-          invulnerable = false;
-        }, 2000); // Después de 2 segundos, el jugador deja de ser invulnerable
-      } else {
-        gameOver();
-        noLoop();
-        return;
+    
+    if (attacks[i].hits(player)) { // Verifica si un láser golpea al jugador
+      attacks[i].remove();
+      if (!invulnerable) { // Si el jugador no es invulnerable
+        vidas -= 1; // Reduce una vida
+        if (vidas > 0) {
+          player.position.x = cols / 2; // Restablece la posición del jugador en el centro
+          player.position.y = rows - 10;
+          invulnerable = true; // Marca al jugador como invulnerable
+          setTimeout(() => {
+            invulnerable = false;
+          }, 2000); // Después de 2 segundos, el jugador deja de ser invulnerable
+        } else {
+          gameOver();
+          noLoop();
+          return;
+        }
       }
-      //linea para matar al jugador, descontar una vida y que reaparezca
-    } else if(attacks[i].y > height){
-        attacks[i].remove();
+    } else if (attacks[i].y > height) { // Si el láser alcanza la parte inferior de la pantalla
+      attacks[i].remove();
     }
 
     if (!attacks[i].toDelete) {
@@ -136,8 +137,11 @@ function draw() {
   }
 
   frame++;
+  translate(30, 35);  //Imprimir vidas
+  fill(255, 0, 0);
+  text("Vidas: " + vidas, 0, 0);
 
-  translate(600, 40);
+  translate(600, 0);  //Imprimir puntaje
   fill(255, 0, 0);
   text("Puntaje: " + puntaje, 0, 0);
 }
