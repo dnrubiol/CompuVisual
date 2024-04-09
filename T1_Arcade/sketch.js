@@ -105,6 +105,8 @@ function draw() {
           }
         }
       }
+
+    if (attacks[i].toDelete === true) attacks.splice(i,1);
   }
 
   for (let i = lasers.length - 1; i >= 0; i--) {
@@ -130,7 +132,7 @@ function draw() {
         }
       }
     }
-    // Verifica si es hora de que los enemigos disparen
+    if (lasers[i].toDelete === true) lasers.splice(i,1);
   }
 
   frame++;
