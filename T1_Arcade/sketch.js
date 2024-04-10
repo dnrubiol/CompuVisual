@@ -121,9 +121,13 @@ function draw() {
       if (lasers[i].hits(aliens[j])) {
         lasers[i].remove();
         if (aliens[j] instanceof BackEnemy) {
-          puntaje += 10;
+          puntaje += 30;
         } else if (aliens[j] instanceof FrontEnemy) {
-          puntaje += 5;
+          puntaje += 10;
+        } else if (aliens[j] instanceof SecondEnemy) {
+          puntaje += 10;
+        } else if (aliens[j] instanceof FirstEnemy) {
+          puntaje += 20;
         }
         aliens.splice(j, 1);
       } else if (lasers[i].y < 0) {
