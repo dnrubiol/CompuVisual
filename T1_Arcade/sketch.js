@@ -145,7 +145,7 @@ function draw() {
   fill(255, 0, 0);
   text("Vidas: " + vidas, 0, 0);
 
-  translate(600, 0);  //Imprimir puntaje
+  translate(580, 0);  //Imprimir puntaje
   fill(255, 0, 0);
   text("Puntaje: " + puntaje, 0, 0);
 }
@@ -162,23 +162,22 @@ function registerAction() {
 }
 
 function createAttack() {
-  if (frameCount % 45 == 0) {
-    let randomIndex = floor(random(aliens.length));
-    let randomEnemy = aliens[randomIndex];
+  if (frameCount % 45 == 0 && aliens.length > 2) {
+    let availableFrontEnemies = aliens.filter(enemy => enemy instanceof FrontEnemy);
 
-    // Si el enemigo seleccionado no es una instancia de FrontEnemy, busca otro aleatorio
-    while (!(randomEnemy instanceof FrontEnemy)) {
-      randomIndex = floor(random(aliens.length));
-      randomEnemy = aliens[randomIndex];
+    if (availableFrontEnemies.length > 0) {
+      let randomIndex = floor(random(availableFrontEnemies.length));
+      let randomEnemy = availableFrontEnemies[randomIndex];
+
+      let ataque = new Laser(
+        randomEnemy.position.x + randomEnemy.width / 2,
+        randomEnemy.position.y
+      );
+      attacks.push(ataque);
     }
-
-    let ataque = new Laser(
-      randomEnemy.position.x + randomEnemy.width / 2,
-      randomEnemy.position.y
-    );
-    attacks.push(ataque);
   }
 }
+
 
 
 function keyPressed() {
