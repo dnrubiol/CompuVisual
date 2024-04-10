@@ -9,7 +9,8 @@ let scl = 5,
   alienDir,
   puntaje,
   attacks = [],
-  vidas;
+  vidas,
+  shipEnemy=0;
   invulnerable = false;
 
 let lastShootTime = 0; // Variable para almacenar el tiempo del último disparo
@@ -25,13 +26,13 @@ function setup() {
 
   // Agregar una nueva fila de aliens
   for (let i = 0; i < 8; i++) {
-      aliens.push(new BackEnemy(i*16 + 2, 10)); // Cambiar la coordenada Y para ajustar la posición de la nueva fila
-      aliens.push(new FirstEnemy(i*16, 20)); // Cambiar la coordenada Y para ajustar la posición de la nueva fila
+      aliens.push(new BackEnemy(i*16 + 2, 20)); // Cambiar la coordenada Y para ajustar la posición de la nueva fila
+      aliens.push(new FirstEnemy(i*16, 30)); // Cambiar la coordenada Y para ajustar la posición de la nueva fila
   }
 
   for (let i = 0; i < 8; i++) {
-    aliens.push(new SecondEnemy(i*16 + 2,30));
-    aliens.push(new FrontEnemy(i*16,40));
+    aliens.push(new SecondEnemy(i*16 + 2,40));
+    aliens.push(new FrontEnemy(i*16,50));
   }
 
   for (let i = 0; i < 4; i++) {
@@ -40,6 +41,7 @@ function setup() {
   alienDir = createVector(2, 0);
   puntaje = 0;
   vidas = 3;
+  shipEnemy = new ShipEnemy(-shipEnemy.width, 10);
 }
 
 function draw() {
@@ -68,6 +70,8 @@ function draw() {
     }
     enemy.render();
   }
+  shipEnemy.update(); // Actualiza la posición de ShipEnemy
+  shipEnemy.render(); // Renderiza ShipEnemy
 
   for (const bunker of bunkers) {
     bunker.render();
