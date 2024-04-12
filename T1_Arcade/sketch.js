@@ -13,7 +13,7 @@ let scl = 5,
   attacks = [],
   vidas,
   shipEnemy = 0;
-(gameStarted = false), (invulnerable = false);
+(gameStarted = false), (invulnerable = false), (shipEnemyHit = false);
 
 let lastShootTime = 0; // Variable para almacenar el tiempo del último disparo
 let shootDelay = 500; // Retardo en milisegundos entre disparos
@@ -24,7 +24,7 @@ function setup() {
   cols = width / scl;
   rows = height / scl;
   shipEnemy = new ShipEnemy(-shipEnemy.width, 10);
-  setupLevel1();
+  //setupLevel1();
   alienDir = createVector(alienSpeed, 0);
   puntaje = 0;
   vidas = 3;
@@ -34,9 +34,7 @@ function draw() {
   background(0);
   textSize(30);
   noStroke();
-  if (keyIsPressed) {
-    registerAction();
-  }
+  registerAction();
 
   if (gameStarted) {
     player.render();
@@ -57,16 +55,16 @@ function draw() {
       }
       enemy.render();
     }
-    if(!shipEnemy.isDestroyed()){
-      shipEnemy.update(); // Actualiza la posición de ShipEnemy
-      shipEnemy.render(); // Renderiza ShipEnemy
-    }
-
+    
     for (const bunker of bunkers) {
       bunker.render();
     }
     createAttack();
-
+    
+    if (!shipEnemy.isDestroyed()) {
+      shipEnemy.update(); // Actualiza la posición de ShipEnemy
+      shipEnemy.render(); // Renderiza ShipEnemy
+    }
     for (let i = attacks.length - 1; i >= 0; i--) {
       attacks[i].updateAlien();
       attacks[i].render();
@@ -118,14 +116,16 @@ function draw() {
             puntaje += 10;
           } else if (aliens[j] instanceof MiddleEnemy) {
             puntaje += 15;
-          } else if (aliens[j] instanceof ShipEnemy) {
-            puntaje += 30;
-            shipEnemy.destroy();
           }
           aliens.splice(j, 1);
-          break;
         } else if (lasers[i].y < 0) {
           lasers[i].remove();
+        } else if (lasers[i].hits(shipEnemy) && !shipEnemyHit) {
+          lasers[i].remove();
+          puntaje += 50;
+          shipEnemyHit = true;  
+          shipEnemy.destroy();
+          break;
         }
       }
       if (!lasers[i].toDelete) {
@@ -138,7 +138,7 @@ function draw() {
       if (lasers[i].toDelete === true) lasers.splice(i, 1);
     }
 
-    if (aliens.length === 0) {
+    if (aliens.length === 0 && shipEnemyHit) {
       if (level === 1) {
         setupLevel2();
       } else if (level === 2) {
@@ -149,17 +149,18 @@ function draw() {
     }
 
     frame++;
-    translate(90, 35); //Imprimir vidas
+    translate(100, 35); //Imprimir vidas
     fill(255, 0, 0);
     text("Vidas: " + vidas, 0, 0);
+    
+    translate(300, 0);
+    fill(255, 0, 0);
+    text("Nivel: " + level, 0, 0);
 
-    translate(580, 0); //Imprimir puntaje
+    translate(300, 0); //Imprimir puntaje
     fill(255, 0, 0);
     text("Puntaje: " + puntaje, 0, 0);
 
-    translate(-260, 0);
-    fill(255,0,0);
-    text("Nivel: " + level, 0, 0);
   } else {
     drawStartScreen();
   }
@@ -243,7 +244,6 @@ function setupLevel1() {
   aliens = [];
   lasers = [];
   bunkers = [];
-  aliens.push(shipEnemy);
   for (let i = 0; i < 6; i++) {
     aliens.push(new MiddleEnemy(i * 21 + 2, 20));
     aliens.push(new FrontEnemy(i * 21, 30));
@@ -253,7 +253,6 @@ function setupLevel1() {
   }
   alienSpeed = 2;
   alienDir = createVector(alienSpeed, 0);
-  aliens.push(shipEnemy);
   console.log(aliens);
 }
 
@@ -261,10 +260,10 @@ function setupLevel2() {
   level = 2;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
+  shipEnemyHit = false;
   aliens = [];
   lasers = [];
   bunkers = [];
-  aliens.push(shipEnemy);
   for (let i = 0; i < 6; i++) {
     aliens.push(new BackEnemy(i * 21, 20));
     aliens.push(new MiddleEnemy(i * 21 + 2, 30));
@@ -281,10 +280,11 @@ function setupLevel3() {
   level = 3;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
+  shipEnemyHit = false;
   aliens = [];
   lasers = [];
   bunkers = [];
-  aliens.push(shipEnemy);
+  //aliens.push(shipEnemy);
   for (let i = 0; i < 8; i++) {
     aliens.push(new BackEnemy(i * 16 + 2, 20));
     aliens.push(new MiddleEnemy(i * 16, 30));
@@ -302,10 +302,11 @@ function setupLevel4() {
   level = 4;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
+  shipEnemyHit = false;
   aliens = [];
   lasers = [];
   bunkers = [];
-  aliens.push(shipEnemy);
+  //aliens.push(shipEnemy);
   for (let i = 0; i < 8; i++) {
     aliens.push(new BackEnemy(i * 16 + 2, 20));
     aliens.push(new BackEnemy(i * 16, 30));
