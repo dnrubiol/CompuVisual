@@ -25,6 +25,7 @@ class ShipEnemy extends Enemy{
         this.width = this.shape[0].length;
         this.height = this.shape.length;
         this.speed = 1; // Velocidad de la nave
+        this.destroyed = false;
     }
     update() {
           // Mover la nave horizontalmente
@@ -35,4 +36,10 @@ class ShipEnemy extends Enemy{
               this.position.x = -this.width;
           }
       }
+    isDestroyed(){
+        return this.destroyed;
+    }
+    destroy(){
+        return this.destroyed = true;
+    }
 }

@@ -2,10 +2,11 @@ class Enemy extends Entity{
     constructor(x,y){
         super(x,y);
         this.color = color(255,10,10);
+        this.destroyed = false;
     }
 
     render(){
-        if (frame % 60 < 30) {
+        if (frame % 60 < 30 && !this.destroyed) {
             this.shape = this.shapeList[0];
         } else {
             this.shape = this.shapeList[1];

@@ -75,7 +75,7 @@ class Laser {
     explode() {
       for (let i = 0; i < 50; i++) {
         this.particles.push(new Spark(createVector(this.x, this.y), color(255,255,255,0)));
-        console.log(this.particles[i].col);
+        //console.log(this.particles[i].col);
       }
     }
   }
