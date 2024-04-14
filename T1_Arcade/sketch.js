@@ -120,13 +120,13 @@ function draw() {
           aliens.splice(j, 1);
         } else if (lasers[i].y < 0) {
           lasers[i].remove();
-        } else if (lasers[i].hits(shipEnemy) && !shipEnemyHit) {
-          lasers[i].remove();
-          puntaje += 50;
-          shipEnemyHit = true;  
-          shipEnemy.destroy();
-          break;
         }
+      }
+      if (lasers[i].hits(shipEnemy) && !shipEnemyHit) {
+        lasers[i].remove();
+        puntaje += 50;
+        shipEnemyHit = true;  
+        shipEnemy.destroy();
       }
       if (!lasers[i].toDelete) {
         for (let j = 0; j < bunkers.length; j++) {
