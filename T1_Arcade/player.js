@@ -2,8 +2,8 @@ class Player extends Entity{
     constructor(x,y){
         super(x,y);
         this.shape = [[0,0,0,1,0,0,0],
-                      [0,0,0,1,0,0,0],
-                      [0,0,0,1,0,0,0],
+                      [0,1,1,1,1,1,0],
+                      [0,1,1,1,1,1,0],
                       [1,1,1,1,1,1,1],];
         this.color = color(10,255,10);
         this.width = this.shape[0].length;  ///
