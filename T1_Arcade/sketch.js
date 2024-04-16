@@ -38,21 +38,31 @@ function draw() {
 
   if (gameStarted) {
     player.render();
-    let dirX = alienDir.x;
-    let dirY = alienDir.y;
-    for (const enemy of aliens) {
-      if (frame % 60 == 0) {
-        enemy.setDir(dirX, dirY);
-        if (dirX === alienSpeed && enemy.position.x + 10 >= cols) {
-          alienDir = createVector(0, alienSpeed);
-        } else if (dirY === alienSpeed && enemy.position.x + 10 >= cols) {
-          alienDir = createVector(-alienSpeed, 0);
-        } else if (dirX === -alienSpeed && enemy.position.x <= 0) {
-          alienDir = createVector(0, alienSpeed);
-        } else if (dirY === alienSpeed && enemy.position.x <= 0) {
-          alienDir = createVector(alienSpeed, 0);
+    if (frame % 60 == 0) {
+      let dirX = alienDir.x;
+      let dirY = alienDir.y;
+      let minPosition = 2*cols;
+      let maxPosition = -10;
+      for (const enemy of aliens) {
+        if (enemy.position.x > maxPosition) {
+          maxPosition = enemy.position.x;
         }
+        if (enemy.position.x < minPosition) {
+          minPosition = enemy.position.x;
+        }
+        enemy.setDir(dirX, dirY);
       }
+      if (dirX === alienSpeed && maxPosition + 10 >= cols) {
+        alienDir = createVector(0, alienSpeed);
+      } else if (dirY === alienSpeed && maxPosition + 10 >= cols) {
+        alienDir = createVector(-alienSpeed, 0);
+      } else if (dirX === -alienSpeed && minPosition <= 0) {
+        alienDir = createVector(0, alienSpeed);
+      } else if (dirY === alienSpeed) {
+        alienDir = createVector(alienSpeed, 0);
+      }
+    }
+    for (const enemy of aliens) {
       enemy.render();
     }
     
@@ -138,7 +148,7 @@ function draw() {
       if (lasers[i].toDelete === true) lasers.splice(i, 1);
     }
 
-    if (aliens.length === 0 && shipEnemyHit) {
+    if (aliens.length === 0 || shipEnemyHit) {
       if (level === 1) {
         setupLevel2();
       } else if (level === 2) {
@@ -194,14 +204,11 @@ function registerAction() {
 }
 
 function createAttack() {
-  if (frameCount % 45 == 0 && aliens.length > 2) {
-    let availableFrontEnemies = aliens.filter(
-      (enemy) => enemy instanceof FrontEnemy
-    );
-
-    if (availableFrontEnemies.length > 0) {
-      let randomIndex = floor(random(availableFrontEnemies.length));
-      let randomEnemy = availableFrontEnemies[randomIndex];
+  if (aliens.length > 0) {
+    let attackFrequency = floor(60 * (5 / aliens.length)) + 1;
+    if (frameCount % attackFrequency == 0) {
+      let randomIndex = floor(random(aliens.length));
+      let randomEnemy = aliens[randomIndex];
 
       let ataque = new Laser(
         randomEnemy.position.x + randomEnemy.width / 2,
@@ -249,7 +256,7 @@ function setupLevel1() {
     aliens.push(new FrontEnemy(i * 21, 30));
   }
   for (let i = 0; i < 4; i++) {
-    bunkers.push(new Bunker((i * cols) / 4 + cols / 8 - 8, rows - 30));
+    bunkers.push(new Bunker((i * cols) / 4 + cols / 8 - 8, rows - 50));
   }
   alienSpeed = 2;
   alienDir = createVector(alienSpeed, 0);
@@ -270,7 +277,7 @@ function setupLevel2() {
     aliens.push(new FrontEnemy(i * 21, 40));
   }
   for (let i = 0; i < 4; i++) {
-    bunkers.push(new Bunker((i * cols) / 4 + cols / 8 - 8, rows - 30));
+    bunkers.push(new Bunker((i * cols) / 4 + cols / 8 - 8, rows - 50));
   }
   alienSpeed = 4;
   alienDir = createVector(alienSpeed, 0);
@@ -292,7 +299,7 @@ function setupLevel3() {
     aliens.push(new FrontEnemy(i * 16, 50));
   }
   for (let i = 0; i < 3; i++) {
-    bunkers.push(new Bunker((i * cols) / 3 + cols / 6 - 8, rows - 30));
+    bunkers.push(new Bunker(round((i * cols) / 3 + cols / 6 - 8), rows - 50));
   }
   alienSpeed = 6;
   alienDir = createVector(alienSpeed, 0);
@@ -316,7 +323,7 @@ function setupLevel4() {
     aliens.push(new FrontEnemy(i * 16, 70));
   }
   for (let i = 0; i < 3; i++) {
-    bunkers.push(new Bunker((i * cols) / 3 + cols / 6 - 8, rows - 30));
+    bunkers.push(new Bunker(round((i * cols) / 3 + cols / 6 - 8), rows - 50));
   }
   alienSpeed = 8;
   alienDir = createVector(alienSpeed, 0);
