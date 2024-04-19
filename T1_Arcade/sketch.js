@@ -35,13 +35,23 @@ function draw() {
   textSize(30);
   noStroke();
   registerAction();
+  function limpiarRecolectorBasura() {
+    // Asignar null a una variable grande para liberar memoria
+    let datosGrandes = null;
+    // Ejecutar la recolección de basura explícitamente
+    if (window.gc) {
+      window.gc();
+    }
+  }
+
+  setInterval(limpiarRecolectorBasura, 1000); // Limpia cada 60 segundos (60000 milisegundos)
 
   if (gameStarted) {
     player.render();
     if (frame % 60 == 0) {
       let dirX = alienDir.x;
       let dirY = alienDir.y;
-      let minPosition = 2*cols;
+      let minPosition = 2 * cols;
       let maxPosition = -10;
       for (const enemy of aliens) {
         if (enemy.position.x > maxPosition) {
@@ -65,12 +75,12 @@ function draw() {
     for (const enemy of aliens) {
       enemy.render();
     }
-    
+
     for (const bunker of bunkers) {
       bunker.render();
     }
     createAttack();
-    
+
     if (!shipEnemy.isDestroyed()) {
       shipEnemy.update(); // Actualiza la posición de ShipEnemy
       shipEnemy.render(); // Renderiza ShipEnemy
@@ -135,7 +145,7 @@ function draw() {
       if (lasers[i].hits(shipEnemy) && !shipEnemyHit) {
         lasers[i].remove();
         puntaje += 50;
-        shipEnemyHit = true;  
+        shipEnemyHit = true;
         shipEnemy.destroy();
       }
       if (!lasers[i].toDelete) {
@@ -162,7 +172,7 @@ function draw() {
     translate(100, 35); //Imprimir vidas
     fill(255, 0, 0);
     text("Vidas: " + vidas, 0, 0);
-    
+
     translate(300, 0);
     fill(255, 0, 0);
     text("Nivel: " + level, 0, 0);
@@ -170,7 +180,6 @@ function draw() {
     translate(300, 0); //Imprimir puntaje
     fill(255, 0, 0);
     text("Puntaje: " + puntaje, 0, 0);
-
   } else {
     drawStartScreen();
   }
