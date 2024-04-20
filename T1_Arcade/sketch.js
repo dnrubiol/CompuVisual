@@ -4,12 +4,14 @@ let scl = 5,
   player,
   frame,
   aliens = [],
+  laserStorage = [],
   lasers = [],
   bunkers = [],
   alienDir,
   alienSpeed,
   puntaje,
   level,
+  attackStorage = [],
   attacks = [],
   vidas,
   shipEnemy = 0;
@@ -28,6 +30,18 @@ function setup() {
   alienDir = createVector(alienSpeed, 0);
   puntaje = 0;
   vidas = 3;
+  for (let i = 0; i < 200; i++) {
+    attackStorage.push(new Laser(
+      -10,
+      -10
+    ));
+  }
+  for (let i = 0; i < 10; i++) {
+    laserStorage.push(new Laser(
+      -10,
+      -10
+    ));
+  }
 }
 
 function draw() {
@@ -45,6 +59,11 @@ function draw() {
   }
 
   setInterval(limpiarRecolectorBasura, 1000); // Limpia cada 60 segundos (60000 milisegundos)
+
+  if (vidas <= 0) {
+    gameOver();
+    return;
+  }
 
   if (gameStarted) {
     player.render();
@@ -102,10 +121,6 @@ function draw() {
             setTimeout(() => {
               invulnerable = false;
             }, 2000); // Después de 2 segundos, el jugador deja de ser invulnerable
-          } else {
-            gameOver();
-            noLoop();
-            return;
           }
         }
       } else if (attacks[i].y > height) {
@@ -121,7 +136,11 @@ function draw() {
         }
       }
 
-      if (attacks[i].toDelete === true) attacks.splice(i, 1);
+      if (attacks[i].toDelete) {
+        attacks[i].toDelete = false;
+        attacks[i].isExploded = false;
+        attackStorage.push(attacks.splice(i, 1)[0]);
+      } 
     }
 
     for (let i = lasers.length - 1; i >= 0; i--) {
@@ -138,8 +157,6 @@ function draw() {
             puntaje += 15;
           }
           aliens.splice(j, 1);
-        } else if (lasers[i].y < 0) {
-          lasers[i].remove();
         }
       }
       if (lasers[i].hits(shipEnemy) && !shipEnemyHit) {
@@ -147,15 +164,23 @@ function draw() {
         puntaje += 50;
         shipEnemyHit = true;
         shipEnemy.destroy();
+        shipEnemy.position.x = -shipEnemy.width;
+        shipEnemy.position.y = 10;
       }
       if (!lasers[i].toDelete) {
         for (let j = 0; j < bunkers.length; j++) {
           if (lasers[i].hits(bunkers[j])) {
             lasers[i].remove();
+          } else if (lasers[i].y < 0) {
+            lasers[i].remove();
           }
         }
       }
-      if (lasers[i].toDelete === true) lasers.splice(i, 1);
+      if (lasers[i].toDelete) {
+        lasers[i].toDelete = false;
+        lasers[i].isExploded = false;
+        laserStorage.push(lasers.splice(i, 1)[0]);
+      } 
     }
 
     if (aliens.length === 0 || shipEnemyHit) {
@@ -165,6 +190,9 @@ function draw() {
         setupLevel3();
       } else if (level === 3) {
         setupLevel4();
+      } else if (level === 4) {
+        gameStarted = false;
+        vidas = 3;
       }
     }
 
@@ -219,10 +247,15 @@ function createAttack() {
       let randomIndex = floor(random(aliens.length));
       let randomEnemy = aliens[randomIndex];
 
-      let ataque = new Laser(
-        randomEnemy.position.x + randomEnemy.width / 2,
-        randomEnemy.position.y
-      );
+      let ataque = attackStorage.pop();
+      if (ataque === undefined) {
+        ataque = new Laser(
+          randomEnemy.position.x + randomEnemy.width / 2,
+          randomEnemy.position.y
+        );
+      }
+      ataque.x = randomEnemy.position.x + randomEnemy.width / 2;
+      ataque.y = randomEnemy.position.y;
       attacks.push(ataque);
     }
   }
@@ -233,7 +266,15 @@ function keyPressed() {
     let currentTime = millis(); // Obtener el tiempo actual
     if (currentTime - lastShootTime > shootDelay) {
       // Verificar si ha pasado suficiente tiempo desde el último disparo
-      let laser = new Laser(player.position.x + 3, player.position.y - 1);
+      let laser = laserStorage.pop();
+      if (laser === undefined) {
+        laser = new Laser(
+          player.position.x + 3,
+          player.position.y - 1
+        );
+      }
+      laser.x = player.position.x + 3;
+      laser.y = player.position.y - 1;
       lasers.push(laser);
       lastShootTime = currentTime; // Actualizar el tiempo del último disparo
     }
@@ -255,8 +296,12 @@ function gameOver() {
 }
 
 function setupLevel1() {
+  removeAllLasers();
+  removeAllAttacks();
   level = 1;
   player = new Player(cols / 2, rows - 10);
+  shipEnemy.destroyed = false;
+  shipEnemyHit = false;
   aliens = [];
   lasers = [];
   bunkers = [];
@@ -269,10 +314,11 @@ function setupLevel1() {
   }
   alienSpeed = 2;
   alienDir = createVector(alienSpeed, 0);
-  console.log(aliens);
 }
 
 function setupLevel2() {
+  removeAllLasers();
+  removeAllAttacks();
   level = 2;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
@@ -293,6 +339,8 @@ function setupLevel2() {
 }
 
 function setupLevel3() {
+  removeAllLasers();
+  removeAllAttacks();
   level = 3;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
@@ -315,6 +363,8 @@ function setupLevel3() {
 }
 
 function setupLevel4() {
+  removeAllLasers();
+  removeAllAttacks();
   level = 4;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
@@ -350,10 +400,25 @@ function mousePressed() {
       // Si se hizo clic en el botón "Play"
       startGame(); // Comienza el juego
     }
+  } else if (vidas <= 0) {
+    gameStarted = false;
+    vidas = 3;
   }
 }
 
 function startGame() {
   gameStarted = true; // Establece el estado del juego como comenzado
   setupLevel1(); // Configura el primer nivel del juego
+}
+
+function removeAllLasers() {
+  for (let i = lasers.length - 1; i >= 0; i--) {
+    laserStorage.push(lasers.splice(i, 1)[0]);
+  }
+}
+
+function removeAllAttacks() {
+  for (let i = attacks.length - 1; i >= 0; i--) {
+    attackStorage.push(attacks.splice(i, 1)[0]);
+  }
 }
