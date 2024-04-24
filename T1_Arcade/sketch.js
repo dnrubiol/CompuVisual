@@ -3,9 +3,13 @@ let scl = 5,
   rows,
   player,
   frame,
+  backAlienStorage = [],
+  middleAlienStorage = [],
+  frontAlienStorage = [],
   aliens = [],
   laserStorage = [],
   lasers = [],
+  bunkerStorage = [],
   bunkers = [],
   alienDir,
   alienSpeed,
@@ -38,6 +42,26 @@ function setup() {
   }
   for (let i = 0; i < 10; i++) {
     laserStorage.push(new Laser(
+      -10,
+      -10
+    ));
+  }
+  for (let i = 0; i < 20; i++) {
+    backAlienStorage.push(new BackEnemy(
+      -10,
+      -10
+    ));
+    middleAlienStorage.push(new MiddleEnemy(
+      -10,
+      -10
+    ));
+    frontAlienStorage.push(new FrontEnemy(
+      -10,
+      -10
+    ));
+  }
+  for (let i = 0; i < 4; i++) {
+    bunkerStorage.push(new Bunker(
       -10,
       -10
     ));
@@ -151,12 +175,14 @@ function draw() {
           lasers[i].remove();
           if (aliens[j] instanceof BackEnemy) {
             puntaje += 25;
+            backAlienStorage.push(aliens.splice(j, 1)[0]);
           } else if (aliens[j] instanceof FrontEnemy) {
             puntaje += 10;
+            frontAlienStorage.push(aliens.splice(j, 1)[0]);
           } else if (aliens[j] instanceof MiddleEnemy) {
             puntaje += 15;
+            middleAlienStorage.push(aliens.splice(j, 1)[0]);
           }
-          aliens.splice(j, 1);
         }
       }
       if (lasers[i].hits(shipEnemy) && !shipEnemyHit) {
@@ -193,6 +219,7 @@ function draw() {
       } else if (level === 4) {
         gameStarted = false;
         vidas = 3;
+        level = 0;
       }
     }
 
@@ -209,7 +236,11 @@ function draw() {
     fill(255, 0, 0);
     text("Puntaje: " + puntaje, 0, 0);
   } else {
-    drawStartScreen();
+    if (level === 0) {
+      gameWon();
+    } else {
+      drawStartScreen();
+    }
   }
 }
 
@@ -227,6 +258,15 @@ function drawStartScreen() {
   fill(255);
   textSize(20);
   text("Play", width / 2, height / 2 + 125);
+}
+
+function gameWon() {
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(50);
+  text("¡Ganaste!", width / 2, height / 2 - 50);
+  textSize(30);
+  text("Puntaje: " + puntaje, width / 2, height / 2 + 50);
 }
 
 function registerAction() {
@@ -298,6 +338,8 @@ function gameOver() {
 function setupLevel1() {
   removeAllLasers();
   removeAllAttacks();
+  removeAllAliens();
+  removeAllBunkers();
   level = 1;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
@@ -305,12 +347,23 @@ function setupLevel1() {
   aliens = [];
   lasers = [];
   bunkers = [];
+  let alien = undefined;
+  let bunker = undefined;
   for (let i = 0; i < 6; i++) {
-    aliens.push(new MiddleEnemy(i * 21 + 2, 20));
-    aliens.push(new FrontEnemy(i * 21, 30));
+    alien = middleAlienStorage.pop();
+    alien.position.x = i * 21 + 2;
+    alien.position.y = 20;
+    aliens.push(alien);
+    alien = frontAlienStorage.pop();
+    alien.position.x = i * 21;
+    alien.position.y = 30;
+    aliens.push(alien);
   }
   for (let i = 0; i < 4; i++) {
-    bunkers.push(new Bunker((i * cols) / 4 + cols / 8 - 8, rows - 50));
+    bunker = bunkerStorage.pop();
+    bunker.position.x = (i * cols) / 4 + cols / 8 - 8;
+    bunker.position.y = rows - 50;
+    bunkers.push(bunker);
   }
   alienSpeed = 2;
   alienDir = createVector(alienSpeed, 0);
@@ -319,6 +372,8 @@ function setupLevel1() {
 function setupLevel2() {
   removeAllLasers();
   removeAllAttacks();
+  removeAllAliens();
+  removeAllBunkers();
   level = 2;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
@@ -326,13 +381,27 @@ function setupLevel2() {
   aliens = [];
   lasers = [];
   bunkers = [];
+  let alien = undefined;
+  let bunker = undefined;
   for (let i = 0; i < 6; i++) {
-    aliens.push(new BackEnemy(i * 21, 20));
-    aliens.push(new MiddleEnemy(i * 21 + 2, 30));
-    aliens.push(new FrontEnemy(i * 21, 40));
+    alien = backAlienStorage.pop();
+    alien.position.x = i * 21;
+    alien.position.y = 20;
+    aliens.push(alien);
+    alien = middleAlienStorage.pop();
+    alien.position.x = i * 21 + 2;
+    alien.position.y = 30;
+    aliens.push(alien);
+    alien = frontAlienStorage.pop();
+    alien.position.x = i * 21;
+    alien.position.y = 40;
+    aliens.push(alien);
   }
   for (let i = 0; i < 4; i++) {
-    bunkers.push(new Bunker((i * cols) / 4 + cols / 8 - 8, rows - 50));
+    bunker = bunkerStorage.pop();
+    bunker.position.x = (i * cols) / 4 + cols / 8 - 8;
+    bunker.position.y = rows - 50;
+    bunkers.push(bunker);
   }
   alienSpeed = 4;
   alienDir = createVector(alienSpeed, 0);
@@ -341,6 +410,8 @@ function setupLevel2() {
 function setupLevel3() {
   removeAllLasers();
   removeAllAttacks();
+  removeAllAliens();
+  removeAllBunkers();
   level = 3;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
@@ -348,15 +419,32 @@ function setupLevel3() {
   aliens = [];
   lasers = [];
   bunkers = [];
+  let alien = undefined;
+  let bunker = undefined;
   //aliens.push(shipEnemy);
   for (let i = 0; i < 8; i++) {
-    aliens.push(new BackEnemy(i * 16 + 2, 20));
-    aliens.push(new MiddleEnemy(i * 16, 30));
-    aliens.push(new MiddleEnemy(i * 16 + 2, 40));
-    aliens.push(new FrontEnemy(i * 16, 50));
+    alien = backAlienStorage.pop();
+    alien.position.x = i * 16 + 2;
+    alien.position.y = 20;
+    aliens.push(alien);
+    alien = middleAlienStorage.pop();
+    alien.position.x = i * 16;
+    alien.position.y = 30;
+    aliens.push(alien);
+    alien = middleAlienStorage.pop();
+    alien.position.x = i * 16 + 2;
+    alien.position.y = 40;
+    aliens.push(alien);
+    alien = frontAlienStorage.pop();
+    alien.position.x = i * 16;
+    alien.position.y = 50;
+    aliens.push(alien);
   }
   for (let i = 0; i < 3; i++) {
-    bunkers.push(new Bunker(round((i * cols) / 3 + cols / 6 - 8), rows - 50));
+    bunker = bunkerStorage.pop();
+    bunker.position.x = round((i * cols) / 3 + cols / 6 - 8);
+    bunker.position.y = rows - 50;
+    bunkers.push(bunker);
   }
   alienSpeed = 6;
   alienDir = createVector(alienSpeed, 0);
@@ -365,6 +453,8 @@ function setupLevel3() {
 function setupLevel4() {
   removeAllLasers();
   removeAllAttacks();
+  removeAllAliens();
+  removeAllBunkers();
   level = 4;
   player = new Player(cols / 2, rows - 10);
   shipEnemy.destroyed = false;
@@ -372,24 +462,49 @@ function setupLevel4() {
   aliens = [];
   lasers = [];
   bunkers = [];
+  let alien = undefined;
+  let bunker = undefined;
   //aliens.push(shipEnemy);
   for (let i = 0; i < 8; i++) {
-    aliens.push(new BackEnemy(i * 16 + 2, 20));
-    aliens.push(new BackEnemy(i * 16, 30));
-    aliens.push(new MiddleEnemy(i * 16 + 2, 40));
-    aliens.push(new MiddleEnemy(i * 16, 50));
-    aliens.push(new FrontEnemy(i * 16 + 2, 60));
-    aliens.push(new FrontEnemy(i * 16, 70));
+    alien = backAlienStorage.pop();
+    alien.position.x = i * 16 + 2;
+    alien.position.y = 20;
+    aliens.push(alien);
+    alien = backAlienStorage.pop();
+    alien.position.x = i * 16;
+    alien.position.y = 30;
+    aliens.push(alien);
+    alien = middleAlienStorage.pop();
+    alien.position.x = i * 16 + 2;
+    alien.position.y = 40;
+    aliens.push(alien);
+    alien = middleAlienStorage.pop();
+    alien.position.x = i * 16;
+    alien.position.y = 50;
+    aliens.push(alien);
+    alien = frontAlienStorage.pop();
+    alien.position.x = i * 16 + 2;
+    alien.position.y = 60;
+    aliens.push(alien);
+    alien = frontAlienStorage.pop();
+    alien.position.x = i * 16;
+    alien.position.y = 70;
+    aliens.push(alien);
   }
   for (let i = 0; i < 3; i++) {
-    bunkers.push(new Bunker(round((i * cols) / 3 + cols / 6 - 8), rows - 50));
+    bunker = bunkerStorage.pop();
+    bunker.position.x = round((i * cols) / 3 + cols / 6 - 8);
+    bunker.position.y = rows - 50;
+    bunkers.push(bunker);
   }
   alienSpeed = 8;
   alienDir = createVector(alienSpeed, 0);
 }
 
 function mousePressed() {
-  if (!gameStarted) {
+  if (level === 0) {
+    level = 1;
+  } else if (!gameStarted) {
     // Si el juego no ha comenzado y se hizo clic
     if (
       mouseX > width / 2 - 50 &&
@@ -420,5 +535,25 @@ function removeAllLasers() {
 function removeAllAttacks() {
   for (let i = attacks.length - 1; i >= 0; i--) {
     attackStorage.push(attacks.splice(i, 1)[0]);
+  }
+}
+
+function removeAllAliens() {
+  let alien;
+  for (let i = aliens.length - 1; i >= 0; i--) {
+    alien = aliens.splice(i, 1)[0];
+    if (alien instanceof FrontEnemy) {
+      frontAlienStorage.push(alien);
+    } else if (alien instanceof MiddleEnemy) {
+      middleAlienStorage.push(alien);
+    } else if (alien instanceof BackEnemy) {
+      backAlienStorage.push(alien);
+    }
+  }
+}
+
+function removeAllBunkers() {
+  for (let i = bunkers.length - 1; i >= 0; i--) {
+    bunkerStorage.push(bunkers.splice(i, 1)[0]);
   }
 }
