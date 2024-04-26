@@ -57,9 +57,13 @@ class Laser {
       }
     }  
 
-    hits(player) { ///
-      if (this.x >= player.position.x && this.x <= player.position.x + player.width
-        && this.y >= player.position.y && this.y <= player.position.y + player.height) {
+    hits(bunker, confirmBunker) { ///
+      if (this.x >= bunker.position.x && this.x <= bunker.position.x + bunker.width
+        && this.y >= bunker.position.y && this.y <= bunker.position.y + bunker.height) {
+        if (this.x >= bunker.position.x + 5 && this.x <= bunker.position.x + bunker.width - 5
+          && this.y >= bunker.position.y + 7 && this.y <= bunker.position.y + bunker.height) {
+            return false;
+        }
         this.isExploded = true;
         this.explode();
         return true;

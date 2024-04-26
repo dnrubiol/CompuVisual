@@ -97,19 +97,19 @@ function draw() {
       let minPosition = 2 * cols;
       let maxPosition = -10;
       for (const enemy of aliens) {
-        if (enemy.position.x > maxPosition) {
-          maxPosition = enemy.position.x;
+        if (enemy.position.x + enemy.width > maxPosition) {
+          maxPosition = enemy.position.x + enemy.width;
         }
         if (enemy.position.x < minPosition) {
           minPosition = enemy.position.x;
         }
         enemy.setDir(dirX, dirY);
       }
-      if (dirX === alienSpeed && maxPosition + 10 >= cols) {
+      if (dirX === alienSpeed && maxPosition >= cols - 2) {
         alienDir = createVector(0, alienSpeed);
-      } else if (dirY === alienSpeed && maxPosition + 10 >= cols) {
+      } else if (dirY === alienSpeed && maxPosition >= cols - 2) {
         alienDir = createVector(-alienSpeed, 0);
-      } else if (dirX === -alienSpeed && minPosition <= 0) {
+      } else if (dirX === -alienSpeed && minPosition <= 2) {
         alienDir = createVector(0, alienSpeed);
       } else if (dirY === alienSpeed) {
         alienDir = createVector(alienSpeed, 0);
@@ -117,6 +117,9 @@ function draw() {
     }
     for (const enemy of aliens) {
       enemy.render();
+      if (enemy.position.y > player.position.y) {
+        vidas = 0;
+      }
     }
 
     for (const bunker of bunkers) {
@@ -154,7 +157,7 @@ function draw() {
 
       if (!attacks[i].toDelete) {
         for (let j = 0; j < bunkers.length; j++) {
-          if (attacks[i].hits(bunkers[j])) {
+          if (attacks[i].hits(bunkers[j],true)) {
             attacks[i].remove();
           }
         }
@@ -362,7 +365,7 @@ function setupLevel1() {
   for (let i = 0; i < 4; i++) {
     bunker = bunkerStorage.pop();
     bunker.position.x = (i * cols) / 4 + cols / 8 - 8;
-    bunker.position.y = rows - 50;
+    bunker.position.y = rows - 70;
     bunkers.push(bunker);
   }
   alienSpeed = 2;
@@ -400,7 +403,7 @@ function setupLevel2() {
   for (let i = 0; i < 4; i++) {
     bunker = bunkerStorage.pop();
     bunker.position.x = (i * cols) / 4 + cols / 8 - 8;
-    bunker.position.y = rows - 50;
+    bunker.position.y = rows - 70;
     bunkers.push(bunker);
   }
   alienSpeed = 4;
@@ -443,7 +446,7 @@ function setupLevel3() {
   for (let i = 0; i < 3; i++) {
     bunker = bunkerStorage.pop();
     bunker.position.x = round((i * cols) / 3 + cols / 6 - 8);
-    bunker.position.y = rows - 50;
+    bunker.position.y = rows - 70;
     bunkers.push(bunker);
   }
   alienSpeed = 6;
@@ -494,7 +497,7 @@ function setupLevel4() {
   for (let i = 0; i < 3; i++) {
     bunker = bunkerStorage.pop();
     bunker.position.x = round((i * cols) / 3 + cols / 6 - 8);
-    bunker.position.y = rows - 50;
+    bunker.position.y = rows - 70;
     bunkers.push(bunker);
   }
   alienSpeed = 8;
