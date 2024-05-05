@@ -350,6 +350,7 @@ function setupLevel1() {
   aliens = [];
   lasers = [];
   bunkers = [];
+  puntaje = 0;
   let alien = undefined;
   let bunker = undefined;
   for (let i = 0; i < 6; i++) {
