@@ -48,7 +48,31 @@ function draw() {
     }
 
     if (frameCount % 30 === 0) {
-        if (figuraActual.posY > 0) {
+        let n = undefined;
+        for (const arr of figuraActual.shape) {
+            for (const num of arr[arr.length-1]) {
+                if (num === 1) {
+                    n = 0;
+                    break;
+                }
+            }
+            if (n === 0) {
+                break;
+            }
+        }
+        for (const arr of figuraActual.shape) {
+            if (n != undefined) {
+                break;
+            }
+            for (const num of arr[arr.length-2]) {
+                if (num === 1) {
+                    n = 1;
+                    break;
+                }
+            }
+        }
+        if (n === undefined) n = 2;
+        if (figuraActual.posY + n > 0) {
             figuraActual.posY -= 1;
         } else {
             figuras.push(figuraActual);
@@ -143,8 +167,15 @@ class Shape {
 class TShape extends Shape{
     constructor(posX,posY,posZ) {
         super(posX,posY,posZ);
-        this.shape = [[[1,1,1],
-                       [0,1,0]]];
+        this.shape = [[[0,0,0],
+                       [0,0,0],
+                       [0,0,0]],
+                      [[0,0,0],
+                       [1,1,1],
+                       [0,1,0]],
+                      [[0,0,0],
+                       [0,0,0],
+                       [0,0,0]]];
         this.color = color(200,0,0);
     }
 }
@@ -152,9 +183,15 @@ class TShape extends Shape{
 class JShape extends Shape{
     constructor(posX,posY,posZ) {
         super(posX,posY,posZ);
-        this.shape = [[[0,1],
-                       [0,1],
-                       [1,1]]];
+        this.shape = [[[0,0,0],
+                       [0,0,0],
+                       [0,0,0]],
+                      [[0,1,0],
+                       [0,1,0],
+                       [1,1,0]],
+                      [[0,0,0],
+                       [0,0,0],
+                       [0,0,0]]];
         this.color = color(0,200,0);
     }
 }
@@ -162,9 +199,15 @@ class JShape extends Shape{
 class SShape extends Shape{
     constructor(posX,posY,posZ) {
         super(posX,posY,posZ);
-        this.shape = [[[1,0],
-                       [1,1],
-                       [0,1]]];
+        this.shape = [[[0,0,0],
+                       [0,0,0],
+                       [0,0,0]],
+                      [[1,0,0],
+                       [1,1,0],
+                       [0,1,0]],
+                      [[0,0,0],
+                       [0,0,0],
+                       [0,0,0]]];
         this.color = color(0,0,200);
     }
 }
@@ -183,10 +226,22 @@ class ZShape extends Shape{
 class IShape extends Shape{
     constructor(posX,posY,posZ) {
         super(posX,posY,posZ);
-        this.shape = [[[1],
-                       [1],
-                       [1],
-                       [1]]];
+        this.shape = [[[0,0,0,0],
+                       [0,0,0,0],
+                       [0,0,0,0],
+                       [0,0,0,0]],
+                      [[0,1,0,0],
+                       [0,1,0,0],
+                       [0,1,0,0],
+                       [0,1,0,0]],
+                      [[0,0,0,0],
+                       [0,0,0,0],
+                       [0,0,0,0],
+                       [0,0,0,0]],
+                      [[0,0,0,0],
+                       [0,0,0,0],
+                       [0,0,0,0],
+                       [0,0,0,0]]];
         this.color = color(200,0,200);
     }
 }
@@ -195,7 +250,9 @@ class CShape extends Shape{
     constructor(posX,posY,posZ) {
         super(posX,posY,posZ);
         this.shape = [[[1,1],
-                       [1,1]]];
+                       [1,1]],
+                      [[0,0],
+                       [0,0]]];
         this.color = color(200,0,200);
     }
 }
