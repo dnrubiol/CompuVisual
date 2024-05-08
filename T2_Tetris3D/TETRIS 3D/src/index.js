@@ -792,7 +792,7 @@ class IShape {
 const width = window.innerWidth;
 const height = window.innerHeight;
 
-const fov = 120; //Tam Escenario
+const fov = 90; //Tam Escenario
 const aspect = width / height;
 const near = 0.1;
 const far = 100; //plano lejano
@@ -805,7 +805,7 @@ const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
 const scene = new THREE.Scene();
 
 console.log(camera);
-camera.position.z = 8;
+camera.position.z = 14;
 
 const light = new THREE.HemisphereLight("white", "gray");
 scene.add(light);
