@@ -13,7 +13,7 @@ class Shape {
         translate(this.posX*scl,this.posY*scl,this.posZ*scl);
         for (let i = 0; i < this.shape.length; i++) {
             push();
-            for (let j = this.shape[0].length - 1; j >= 0; j--) {
+            for (let j = 0; j < this.shape[0].length; j++) {
                 push();
                 for (let k = 0; k < this.shape[0][0].length; k++) {
                     if (this.shape[i][j][k]) box(scl);
@@ -31,6 +31,7 @@ class Shape {
     render(){
         this.drawEntity();
     }
+
 
     rotateX(){
         let newShape = Array(this.shape.length).fill().map(
@@ -155,7 +156,7 @@ class IShape extends Shape{
                        [0,0,0,0],
                        [0,0,0,0],
                        [0,0,0,0]],
-                      [[0,0,0,0],
+                     [[0,0,0,0],
                        [0,0,0,0],
                        [0,0,0,0],
                        [0,0,0,0]]];
