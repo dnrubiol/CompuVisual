@@ -125,8 +125,7 @@ function actualizarTablero() {
                             posY: figuraActual.posY + j,
                             posZ: figuraActual.posZ + i
                         });
-                      console.log("posiciones",(figuraActual.posX),(figuraActual.posY),(figuraActual.posZ));
-                      console.log("holi",(figuraActual.posY+j),(figuraActual.posZ+i),(figuraActual.posX+k));
+                      
                       tablero[figuraActual.posY+j][figuraActual.posZ + i][figuraActual.posX + k] = 1;
                     }
                 }
@@ -146,7 +145,7 @@ function verificarColision() {
                         // Si hay un bloque en esta posición de la forma,
                         // añadir la posición relativa al tablero
                         
-                      console.log("cay...",(figuraActual.posY+j-1),(figuraActual.posZ + i),(figuraActual.posX + k));
+                      
                       if(figuraActual.posY+j-1 < 0){
                         return false;
                       }
@@ -228,15 +227,126 @@ function canMove(direction) {
     );
 }
 
-function keyPressed() {
-    if (keyCode === UP_ARROW) {
-        figuraActual.rotateX();
-    } else if (keyCode === RIGHT_ARROW) {
-        figuraActual.rotateY();
-    } else if (keyCode === LEFT_ARROW) {
-        figuraActual.rotateZ();
+function canRotate(figura, eje) {
+    let newShape;
+
+    // Crear una copia de la figura actual y rotarla según el eje
+    if (eje === 'X') {
+        newShape = Array(figura.shape.length).fill().map(
+            () => Array(figura.shape[0][0].length).fill().map(
+                () => Array(figura.shape[0].length).fill(0)
+            )
+        );
+        for (let i = 0; i < figura.shape.length; i++) {
+            for (let j = 0; j < figura.shape[0].length; j++) {
+                for (let k = 0; k < figura.shape[0][0].length; k++) {
+                    newShape[i][k][figura.shape[0].length - j - 1] = figura.shape[i][j][k];
+                }
+            }
+        }
+    } else if (eje === 'Y') {
+        newShape = Array(figura.shape[0][0].length).fill().map(
+            () => Array(figura.shape[0].length).fill().map(
+                () => Array(figura.shape.length).fill(0)
+            )
+        );
+        for (let i = 0; i < figura.shape.length; i++) {
+            for (let j = 0; j < figura.shape[0].length; j++) {
+                for (let k = 0; k < figura.shape[0][0].length; k++) {
+                    newShape[k][j][figura.shape.length - i - 1] = figura.shape[i][j][k];
+                }
+            }
+        }
+    } else if (eje === 'Z') {
+        newShape = Array(figura.shape[0].length).fill().map(
+            () => Array(figura.shape.length).fill().map(
+                () => Array(figura.shape[0][0].length).fill(0)
+            )
+        );
+        for (let i = 0; i < figura.shape.length; i++) {
+            for (let j = 0; j < figura.shape[0].length; j++) {
+                for (let k = 0; k < figura.shape[0][0].length; k++) {
+                    newShape[figura.shape[0].length - j - 1][i][k] = figura.shape[i][j][k];
+                }
+            }
+        }
     }
-//   Desplazamientos
+
+    // Verificar colisiones con la figura rotada
+    for (let i = 0; i < newShape.length; i++) {
+        for (let j = 0; j < newShape[0].length; j++) {
+            for (let k = 0; k < newShape[0][0].length; k++) {
+                if (newShape[i][j][k]) {
+                    let x = figura.posX + k;
+                    let y = figura.posY + j;
+                    let z = figura.posZ + i;
+
+                    // Verificar límites del tablero
+                    if (x < 0 || x >= gridX || y < 0 || y >= gridY || z < 0 || z >= gridZ) {
+                        return false;
+                    }
+
+                    // Verificar colisiones con otras figuras en el tablero
+                    if (tablero[y][z][x] === 1) {
+                        return false;
+                    }
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+function tryMoveAndRotate(eje) {
+    if (canRotate(figuraActual, eje)) {
+        if (eje === 'X') figuraActual.rotateX();
+        else if (eje === 'Y') figuraActual.rotateY();
+        else if (eje === 'Z') figuraActual.rotateZ();
+        return true;
+    }
+
+    // Intentar mover hacia atrás, izquierda, derecha, adelante y luego rotar
+    const originalPosX = figuraActual.posX;
+    const originalPosY = figuraActual.posY;
+    const originalPosZ = figuraActual.posZ;
+
+    const moves = [
+        { x: 0, y: 0, z: -1 }, // Backward
+        { x: 0, y: 0, z: 1 },  // Forward
+        { x: -1, y: 0, z: 0 }, // Left
+        { x: 1, y: 0, z: 0 }   // Right
+    ];
+
+    for (const move of moves) {
+        figuraActual.posX += move.x;
+        figuraActual.posZ += move.z;
+
+        if (canRotate(figuraActual, eje)) {
+            if (eje === 'X') figuraActual.rotateX();
+            else if (eje === 'Y') figuraActual.rotateY();
+            else if (eje === 'Z') figuraActual.rotateZ();
+            return true;
+        }
+
+        // Si no se pudo rotar, revertir el movimiento
+        figuraActual.posX = originalPosX;
+        figuraActual.posZ = originalPosZ;
+    }
+
+    return false;
+}
+
+function keyPressed() {
+    // Rotaciones
+    if (keyCode === UP_ARROW) {
+        tryMoveAndRotate('X');
+    } else if (keyCode === RIGHT_ARROW) {
+        tryMoveAndRotate('Y');
+    } else if (keyCode === LEFT_ARROW) {
+        tryMoveAndRotate('Z');
+    }
+    // Desplazamientos
     else if (key === 'w' || key === 'W') {
         moveForward();
     } else if (key === 's' || key === 'S') {
