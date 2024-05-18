@@ -1,11 +1,11 @@
-let scl = 20, gridX, gridY, gridZ, figuraActual, figuras = [], grid;
-let tablero = getBoard();
+let scl = 20, gridX, gridY, gridZ, figuraActual, figuras = [], grid, horizontalFilled = false, filledList = [], timer;
+let tablero;
 
 
-function getBoard() { 
-  grid = Array(20).fill().map(() =>
-      Array(8).fill().map(() =>
-          Array(8).fill(0)
+function getBoard(x,y,z) { 
+  grid = Array(y+4).fill().map(() =>
+      Array(x).fill().map(() =>
+          Array(z).fill(0)
       )
   );
   return grid;
@@ -17,6 +17,7 @@ function setup() {
     gridX = 8;
     gridY = 16;
     gridZ = 8;
+    tablero = getBoard(gridX,gridY,gridZ);
     camera(600,-600,600,0,-100,0);
     //figuraActual = new SShape(floor(gridX/2)-1,gridY,floor(gridZ/2)-1);
     figuraActual = generarFiguras();
@@ -28,29 +29,7 @@ function draw() {
     stroke(255);
     scale(1,-1,1);
 
-    // Grid guia en el plano XZ
-    for (let i = 0; i <= gridX; i++) {
-        line(i*scl,0,0,i*scl,0,gridZ*scl);
-    }
-    for (let i = 0; i <= gridZ; i++) {
-        line(0,0,i*scl,gridX*scl,0,i*scl);
-    }
-
-    // Grid guia en el plano XY
-    for (let i = 0; i <= gridX; i++) {
-        line(i*scl,0,0,i*scl,gridY*scl,0);
-    }
-    for (let i = 0; i <= gridY; i++) {
-        line(0,i*scl,0,gridX*scl,i*scl,0);
-    }
-
-    // Grid guia en el plano YZ
-    for (let i = 0; i <= gridY; i++) {
-        line(0,i*scl,0,0,i*scl,gridZ*scl);
-    }
-    for (let i = 0; i <= gridZ; i++) {
-        line(0,0,i*scl,0,gridY*scl,i*scl);
-    }
+    drawGridLines();
     translate(scl/2,scl/2,scl/2);
 
   
@@ -59,52 +38,35 @@ function draw() {
     // for (const figura of figuras) {
     //     figura.render();
     // }
-   for (let i = 0; i < tablero.length; i++) {
-    for (let j = 0; j < tablero[0].length; j++) {
-        for (let k = 0; k < tablero[0][0].length; k++) {
-            const indexI = tablero.length - 1 - i; // Invertimos el índice i
-            if (tablero[indexI][j][k] === 1) {
-                push();
-                fill(0, 0, 255); // Azul
-                translate(k * scl, indexI * scl, j * scl); // Ajustamos la altura
-                box(scl);
-                pop();
-            }
-        }
-    }
-}
+    renderGrid();
   
-//     Este if se ejecuta para cada figura actual
-    if (frameCount % 10 == 0) {
-        let n = undefined;
-        for (const arr of figuraActual.shape) {
-            for (const num of arr[arr.length-1]) {
-                if (num === 1) {
-                    n = 0;
-                    break;
+    if (filledList.length === 0) {
+        // Este if se ejecuta para cada figura actual
+        if (frameCount % 20 == 0) {
+            if (verificarColision() ) {
+                figuraActual.posY -= 1;
+            } else {
+                actualizarTablero();
+                for (let i = 0; i < tablero.length; i++) {
+                    if (isHorizontalFull(i)) {
+                        filledList.push(i);
+                    }
                 }
-            }
-            if (n === 0) {
-                break;
+                timer = frameCount + 60;
             }
         }
-        for (const arr of figuraActual.shape) {
-            if (n != undefined) {
-                break;
-            }
-            for (const num of arr[arr.length-2]) {
-                if (num === 1) {
-                    n = 1;
-                    break;
+    } else {
+        //console.log(filledList[0]);
+        if (frameCount > timer) {
+            // borra las lineas que ya estan completas
+            for (let i = filledList[0]+filledList.length; i < tablero.length; i++) {
+                for (let j = 0; j < tablero[0].length; j++) {
+                    for (let k = 0; k < tablero[0][0].length; k++) {
+                        tablero[i-filledList.length][j][k] = tablero[i][j][k];
+                    }
                 }
             }
-        }
-        if (n === undefined) n = 2;
-        
-        if (verificarColision() ) {
-            figuraActual.posY -= 1;
-        } else {
-            actualizarTablero();
+            filledList = [];
         }
     }
   
@@ -174,7 +136,7 @@ function generarFiguras() {
     const z = getRandomIntInclusive(2, gridZ - 2);
   
     let figura = new formas[randomIndex](x, y, z);
-  
+    //let figura = new formas[4](x, y, z);
     //console.log(figura);
     return figura;
 }
@@ -356,4 +318,60 @@ function keyPressed() {
     } else if (key === 'd' || key === 'D') {
         moveRight();
     }
+}
+
+function drawGridLines() {
+    // Grid guia en el plano XZ
+    for (let i = 0; i <= gridX; i++) {
+        line(i*scl,0,0,i*scl,0,gridZ*scl);
+    }
+    for (let i = 0; i <= gridZ; i++) {
+        line(0,0,i*scl,gridX*scl,0,i*scl);
+    }
+
+    // Grid guia en el plano XY
+    for (let i = 0; i <= gridX; i++) {
+        line(i*scl,0,0,i*scl,gridY*scl,0);
+    }
+    for (let i = 0; i <= gridY; i++) {
+        line(0,i*scl,0,gridX*scl,i*scl,0);
+    }
+
+    // Grid guia en el plano YZ
+    for (let i = 0; i <= gridY; i++) {
+        line(0,i*scl,0,0,i*scl,gridZ*scl);
+    }
+    for (let i = 0; i <= gridZ; i++) {
+        line(0,0,i*scl,0,gridY*scl,i*scl);
+    }
+}
+
+function renderGrid() {
+    for (let i = 0; i < tablero.length; i++) {
+        for (let j = 0; j < tablero[0].length; j++) {
+            for (let k = 0; k < tablero[0][0].length; k++) {
+                const indexI = tablero.length - 1 - i; // Invertimos el índice i
+                if (tablero[indexI][j][k] === 1) {
+                    push();
+                    if (filledList.includes(indexI)) {
+                        fill(0, (sin(frameCount/2)+1)/2*255, 0);
+                    } else {
+                        fill(0, 0, 255); // Azul
+                    }
+                    translate(k * scl, indexI * scl, j * scl); // Ajustamos la altura
+                    box(scl);
+                    pop();
+                }
+            }
+        }
+    }
+}
+
+function isHorizontalFull(indexY) {
+    for (let i = 0; i < tablero[0].length; i++) {
+        for (let j = 0; j < tablero[0][0].length; j++) {
+            if (tablero[indexY][i][j] === 0) return false;
+        }
+    }
+    return true;
 }
