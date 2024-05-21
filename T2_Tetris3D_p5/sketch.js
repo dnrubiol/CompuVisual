@@ -1,9 +1,10 @@
 let scl = 20, gridX, gridY, gridZ, figuraActual, figuras = [], grid, horizontalFilled = false, filledList = [], timer;
 let tablero;
 let puntaje = 1; ///
-let nivel = 1;
+let nivel = 10;
 let myFont; ///
 let imagetetrislogo, imagewasd, imageflechas;
+let gameOver = false; ///
 
 function preload() {
     myFont = loadFont('Micro5.ttf');    
@@ -45,7 +46,7 @@ function draw() {
     translate(scl/2,scl/2,scl/2);
 
     
-    
+    if(!gameOver){
     figuraActual.render();
     // for (const figura of figuras) {
     //     figura.render();
@@ -59,6 +60,9 @@ function draw() {
                 figuraActual.posY -= 1;
             } else {
                 actualizarTablero();
+                if (checkGameOver()) {
+                    gameOver = true; // Terminar el juego si se detecta una condición de game over
+                }
                 for (let i = 0; i < tablero.length; i++) {
                     if (isHorizontalFull(i)) {
                         filledList.push(i);
@@ -80,6 +84,9 @@ function draw() {
             }
             filledList = [];
         }
+    }
+    } else {
+        displayGameOver();
     }
 
     /// Mostrar el puntaje y nivel
@@ -434,4 +441,29 @@ function isHorizontalFull(indexY) {
         }
     }
     return true;
+}
+
+
+function displayGameOver() {
+    push();
+    translate(200, 300, 200); // Ajusta la posición Z para acercar el texto
+    scale(1, -1);  // Invertir Y de nuevo para el texto
+    fill(255, 0, 0);  // Color rojo
+    textSize(100);
+    rotateY(0.8);
+    text("GAME OVER", -280, -20); 
+    pop();
+}
+
+function checkGameOver() {
+    for (let i = gridY; i < tablero.length; i++) {
+        for (let j = 0; j < tablero[0].length; j++) {
+            for (let k = 0; k < tablero[0][0].length; k++) {
+                if (tablero[i][j][k] === 1) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
