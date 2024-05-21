@@ -42,7 +42,7 @@ function draw() {
   
     if (filledList.length === 0) {
         // Este if se ejecuta para cada figura actual
-        if (frameCount % 20 == 0) {
+        if (frameCount % 70 == 0) {
             if (verificarColision() ) {
                 figuraActual.posY -= 1;
             } else {
@@ -180,6 +180,23 @@ function canMove(direction) {
     }
 
     // Verificar si la nueva posición está dentro del tablero y no hay colisión
+  if(figuraActual instanceof JShape){
+    return (
+        newX >= 0 &&
+        newX < gridX-1 &&
+        newZ >= 0 &&
+        newZ < gridZ-2 &&
+        verificarColision(direction)
+    );
+  } else if(figuraActual instanceof IShape) {
+    return (
+        newX >= 0 &&
+        newX < gridX-1 &&
+        newZ >= 0 &&
+        newZ < gridZ-3 &&
+        verificarColision(direction)
+    );
+  } else {
     return (
         newX >= 0 &&
         newX < gridX-1 &&
@@ -187,6 +204,7 @@ function canMove(direction) {
         newZ < gridZ-1 &&
         verificarColision(direction)
     );
+  }
 }
 
 function canRotate(figura, eje) {
