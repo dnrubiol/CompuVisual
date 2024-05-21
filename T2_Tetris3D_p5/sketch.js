@@ -1,7 +1,7 @@
 let scl = 20, gridX, gridY, gridZ, figuraActual, figuras = [], grid, horizontalFilled = false, filledList = [], timer;
 let tablero;
 let puntaje = 1; ///
-let nivel = 10;
+let nivel = 1;
 let myFont; ///
 let imagetetrislogo, imagewasd, imageflechas;
 let gameOver = false; ///
@@ -440,6 +440,8 @@ function isHorizontalFull(indexY) {
             if (tablero[indexY][i][j] === 0) return false;
         }
     }
+    nivel++;
+    console.log("capa llena"); 
     return true;
 }
 
