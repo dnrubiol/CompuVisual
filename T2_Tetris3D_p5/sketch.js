@@ -49,7 +49,7 @@ function draw() {
     if (filledList.length === 0) {
         // Este if se ejecuta para cada figura actual
         if (frameCount % 20 == 0) {
-            if (verificarColision() ) {
+            if (verificarColision("abajo") ) {
                 figuraActual.posY -= 1;
             } else {
                 actualizarTablero();
@@ -115,28 +115,48 @@ function actualizarTablero() {
     figuraActual = generarFiguras();
 }
 
-function verificarColision() {
+function verificarColision(direccion) {
+    // Desplazamientos según la dirección
+    let dx = 0, dy = 0, dz = 0;
+    if (direccion === "left") {
+        dx = -1;
+    } else if (direccion === "right") {
+        dx = 1;
+    } else if (direccion === "forward") {
+        dz = 1;
+    } else if (direccion === "backward") {
+        dz = -1;
+    } else if (direccion === "abajo") {
+        dy = -1;
+    }
+
     // Recorre cada capa de la figura actual
     for (let i = ((figuraActual.shape.length)-1); i >= 0; i--) {
-            for (let j = ((figuraActual.shape[0].length)-1); j >= 0; j--) {
-                for (let k = ((figuraActual.shape[0][0].length)-1); k >=0; k--) {
-                    if (figuraActual.shape[i][j][k]) {
-                        // Si hay un bloque en esta posición de la forma,
-                        // añadir la posición relativa al tablero
-                        
-                      
-                      if(figuraActual.posY+j-1 < 0){
+        for (let j = ((figuraActual.shape[0].length)-1); j >= 0; j--) {
+            for (let k = ((figuraActual.shape[0][0].length)-1); k >= 0; k--) {
+                if (figuraActual.shape[i][j][k]) {
+                    let newX = figuraActual.posX + k + dx;
+                    let newY = figuraActual.posY + j + dy;
+                    let newZ = figuraActual.posZ + i + dz;
+
+                    // Verificar límites del tablero
+                    if (newX < 0 || newX >= gridX || newY < 0 || newZ < 0 || newZ >= gridZ) {
                         return false;
-                      }
-                      if(tablero[figuraActual.posY+j-1][figuraActual.posZ + i][figuraActual.posX + k] === 1){
+                    }
+
+                    // Verificar colisiones con otras figuras en el tablero
+                    if (tablero[newY][newZ][newX] === 1) {
                         return false;
-                      }
                     }
                 }
             }
         }
+    }
     return true; // No hay colisiones detectadas
 }
+
+
+
 
 function generarFiguras() {
     function getRandomIntInclusive(min, max) {
@@ -197,23 +217,6 @@ function canMove(direction) {
     }
 
     // Verificar si la nueva posición está dentro del tablero y no hay colisión
-  if(figuraActual instanceof JShape){
-    return (
-        newX >= 0 &&
-        newX < gridX-1 &&
-        newZ >= 0 &&
-        newZ < gridZ-2 &&
-        verificarColision(direction)
-    );
-  } else if(figuraActual instanceof IShape) {
-    return (
-        newX >= 0 &&
-        newX < gridX-1 &&
-        newZ >= 0 &&
-        newZ < gridZ-3 &&
-        verificarColision(direction)
-    );
-  } else {
     return (
         newX >= 0 &&
         newX < gridX-1 &&
@@ -221,7 +224,6 @@ function canMove(direction) {
         newZ < gridZ-1 &&
         verificarColision(direction)
     );
-  }
 }
 
 function canRotate(figura, eje) {
