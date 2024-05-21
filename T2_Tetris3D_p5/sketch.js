@@ -54,7 +54,7 @@ function draw() {
   
     if (filledList.length === 0) {
         // Este if se ejecuta para cada figura actual
-        if (frameCount % 20 == 0) {
+        if (frameCount % Math.ceil(20/nivel) == 0) {
             if (verificarColision("abajo") ) {
                 figuraActual.posY -= 1;
             } else {
@@ -183,8 +183,8 @@ function verificarColision(direccion) {
 
 function generarFiguras() {
     function getRandomIntInclusive(min, max) {
-      const minCeiled = Math.ceil(min);
-      const maxFloored = Math.floor(max);
+      const minCeiled = Math.ceil(min-1);
+      const maxFloored = Math.floor(max-1);
       return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled); // The maximum is inclusive and the minimum is inclusive
     }
   
@@ -241,9 +241,9 @@ function canMove(direction) {
 
     // Verificar si la nueva posición está dentro del tablero y no hay colisión
     return (
-        newX >= 0 &&
+        newX >= -1 &&
         newX < gridX-1 &&
-        newZ >= 0 &&
+        newZ >= -1 &&
         newZ < gridZ-1 &&
         verificarColision(direction)
     );
