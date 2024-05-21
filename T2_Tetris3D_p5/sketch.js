@@ -1,10 +1,15 @@
 let scl = 20, gridX, gridY, gridZ, figuraActual, figuras = [], grid, horizontalFilled = false, filledList = [], timer;
 let tablero;
 let puntaje = 1; ///
+let nivel = 1;
 let myFont; ///
+let imagetetrislogo, imagewasd, imageflechas;
 
 function preload() {
-    myFont = loadFont('Micro5.ttf');
+    myFont = loadFont('Micro5.ttf');    
+    imagetetrislogo = loadImage('tetris_logo.png');
+    imagewasd = loadImage('wasd_flechas.png');
+    imageflechas = loadImage('flechas_rotar.png');
 }
 
 function getBoard(x,y,z) { 
@@ -23,10 +28,11 @@ function setup() {
     gridY = 16;
     gridZ = 8;
     tablero = getBoard(gridX,gridY,gridZ);
-    camera(600,-600,600,0,-100,0);
+    camera(600,-400,600,0,-170,50);
     //figuraActual = new SShape(floor(gridX/2)-1,gridY,floor(gridZ/2)-1);
     figuraActual = generarFiguras();    
     textFont(myFont);  
+    
 }
 
 function draw() {  
@@ -38,7 +44,7 @@ function draw() {
     drawGridLines();
     translate(scl/2,scl/2,scl/2);
 
-  
+    
     
     figuraActual.render();
     // for (const figura of figuras) {
@@ -76,15 +82,32 @@ function draw() {
         }
     }
 
-    /// Mostrar el puntaje
+    /// Mostrar el puntaje y nivel
     push();
     scale(1, -1);  // Invertir Y de nuevo para el texto
     fill(255);  // Color blanco
     rotateY(0.8);
     textSize(70);
-    text("PUNTAJE: " + puntaje, -150, -350);  // Mostrar en coordenadas (0, 0)
+    text("PUNTAJE: " + puntaje + "  NIVEL: " + nivel, -230, -370); 
     pop();
-  
+
+    push(); //tetris logo
+    scale(1, -1);
+    rotateY(0.8);
+    image(imagetetrislogo, -450, -250, 280, 250);
+    pop();
+
+    push(); //instrucciones wasd
+    scale(1, -1);
+    rotateY(0.8);
+    image(imagewasd, 160, -280, 180, 150);
+    pop();
+
+    push(); //instrucciones flechas
+    scale(1, -1);
+    rotateY(0.8);
+    image(imageflechas, 160, -120, 180, 150);
+    pop();
 }
 
 function actualizarTablero() {
