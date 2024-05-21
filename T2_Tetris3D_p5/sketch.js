@@ -28,7 +28,7 @@ function setup() {
     gridY = 16;
     gridZ = 8;
     tablero = getBoard(gridX,gridY,gridZ);
-    camera(600,-400,600,0,-170,50);
+    camera(600,-400,600,0,-170,10);
     //figuraActual = new SShape(floor(gridX/2)-1,gridY,floor(gridZ/2)-1);
     figuraActual = generarFiguras();    
     textFont(myFont);  
@@ -94,7 +94,7 @@ function draw() {
     push(); //tetris logo
     scale(1, -1);
     rotateY(0.8);
-    image(imagetetrislogo, -450, -250, 280, 250);
+    image(imagetetrislogo, -420, -320, 280, 450);
     pop();
 
     push(); //instrucciones wasd
