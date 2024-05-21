@@ -5,6 +5,7 @@ let previewBuilding = null;
 let houseModel, skyScrapperModel, shopModel;
 let buildingType = "House"; // Tipo de edificio predeterminado
 let message = "";
+let interfaz;
 function preload() {
   houseModel = loadModel("models/Casa residencial.obj", true);
   skyScrapperModel = loadModel("models/edificioAlto.obj", true);
@@ -14,7 +15,9 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   cam = createCamera();
-  cam.ortho();
+  cam.ortho(-width / 2, width / 2, -height / 2, height / 2, 80, 16000000000000);
+  //cam.ortho();
+  interfaz = createGraphics(windowWidth, windowHeight);
 
   for (let i = -200; i <= 200; i += 100) {
     roads.push(new Road(i, -200, i, 200));
@@ -29,14 +32,6 @@ function draw() {
   // Control de la cámara con el mouse
   orbitControl();
 
-  push();
-  fill(0);
-  textSize(20);
-  textAlign(LEFT, TOP);
-  text("Bienvenido", 10, 10);
-  pop();
-
-
   // Actualizar y mostrar los edificios
   for (let road of roads) {
     road.display();
@@ -48,6 +43,8 @@ function draw() {
   if (previewBuilding !== null) {
     previewBuilding.display();
   }
+
+  drawInterface();
 }
 
 function showTempMessage(msg) {
@@ -101,6 +98,63 @@ function doubleClicked() {
         break;
     }
   }
+}
+
+function drawInterface(){
+  push();
+  interfaz.fill(0);
+  interfaz.textSize(20);
+  interfaz.textAlign(LEFT, TOP);
+  interfaz.text("Bienvenido", 10, 10);
+  interfaz.fill(255);
+  if (buildingType == "Casa") {
+    interfaz.fill(0,255,0);
+    interfaz.rect(width/2 - 180,height - 200,100,120);
+    interfaz.fill(255);
+    interfaz.rect(width/2 - 50,height - 200,100,120);
+    interfaz.rect(width/2 + 80,height - 200,100,120);
+  } else if (buildingType == "Edificio") {
+    interfaz.rect(width/2 - 180,height - 200,100,120);
+    interfaz.fill(0,255,0);
+    interfaz.rect(width/2 - 50,height - 200,100,120);
+    interfaz.fill(255);
+    interfaz.rect(width/2 + 80,height - 200,100,120);
+  } else if (buildingType == "Tienda") {
+    interfaz.rect(width/2 - 180,height - 200,100,120);
+    interfaz.rect(width/2 - 50,height - 200,100,120);
+    interfaz.fill(0,255,0);
+    interfaz.rect(width/2 + 80,height - 200,100,120);
+  } else {
+    interfaz.rect(width/2 - 180,height - 200,100,120);
+    interfaz.rect(width/2 - 50,height - 200,100,120);
+    interfaz.rect(width/2 + 80,height - 200,100,120); 
+  }
+  interfaz.fill(0);
+  interfaz.text("Dinero: $1000", width/2 - 400, height - 160);
+  interfaz.text("Casa", width/2 - 170, height - 100);
+  interfaz.text("Edificio", width/2 - 40, height - 100);
+  interfaz.text("Tienda", width/2 + 90, height - 100);
+  pop();
+  push();
+  let X = cam.eyeX - cam.centerX;
+  let Y = cam.eyeY - cam.centerY;
+  let Z = cam.eyeZ - cam.centerZ;
+  translate(cam.centerX, cam.centerY, cam.centerZ);
+  scale(sqrt(Z * Z + X * X + Y * Y) / 800);
+  if (Z > 0) {
+    rotateY(atan(X / Z));
+  } else {
+    rotateY(atan(X / Z) + PI);
+  }
+  if (cam.upY > 0) {
+    rotateX(atan(-Y / sqrt(Z * Z + X * X)));
+  } else {
+    rotateY(PI);
+    rotateX(atan(Y / sqrt(Z * Z + X * X)) + PI);
+  }
+  translate(-windowWidth / 2, -windowHeight / 2);
+  image(interfaz, 0, 0);
+  pop();
 }
 
 class Road {
