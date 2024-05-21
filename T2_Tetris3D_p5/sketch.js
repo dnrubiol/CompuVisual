@@ -1,6 +1,11 @@
 let scl = 20, gridX, gridY, gridZ, figuraActual, figuras = [], grid, horizontalFilled = false, filledList = [], timer;
 let tablero;
+let puntaje = 1; ///
+let myFont; ///
 
+function preload() {
+    myFont = loadFont('Micro5.ttf');
+}
 
 function getBoard(x,y,z) { 
   grid = Array(y+4).fill().map(() =>
@@ -13,14 +18,15 @@ function getBoard(x,y,z) {
 
 
 function setup() {
-    createCanvas(680, 480, WEBGL);
+    createCanvas(780, 580, WEBGL);
     gridX = 8;
     gridY = 16;
     gridZ = 8;
     tablero = getBoard(gridX,gridY,gridZ);
     camera(600,-600,600,0,-100,0);
     //figuraActual = new SShape(floor(gridX/2)-1,gridY,floor(gridZ/2)-1);
-    figuraActual = generarFiguras();
+    figuraActual = generarFiguras();    
+    textFont(myFont);  
 }
 
 function draw() {  
@@ -42,7 +48,7 @@ function draw() {
   
     if (filledList.length === 0) {
         // Este if se ejecuta para cada figura actual
-        if (frameCount % 70 == 0) {
+        if (frameCount % 20 == 0) {
             if (verificarColision() ) {
                 figuraActual.posY -= 1;
             } else {
@@ -69,6 +75,15 @@ function draw() {
             filledList = [];
         }
     }
+
+    /// Mostrar el puntaje
+    push();
+    scale(1, -1);  // Invertir Y de nuevo para el texto
+    fill(255);  // Color blanco
+    rotateY(0.8);
+    textSize(70);
+    text("PUNTAJE: " + puntaje, -150, -350);  // Mostrar en coordenadas (0, 0)
+    pop();
   
 }
 
@@ -94,6 +109,8 @@ function actualizarTablero() {
             }
         }
     figuras.push(figuraActual);
+    puntaje++; ///
+    console.log(puntaje);
     // Genera una nueva figura
     figuraActual = generarFiguras();
 }
