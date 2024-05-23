@@ -44,6 +44,7 @@ function draw() {
     previewBuilding.display();
   }
 
+  setPreview();
   drawInterface();
 }
 
@@ -54,11 +55,33 @@ function showTempMessage(msg) {
   }, 2000);
 }
 
-function mouseMoved() {
+function setPreview() {
   // Actualizar la posición de la previsualización del edificio
   if (previewBuilding !== null) {
-    let posX = mouseX - width / 2;
-    let posY = mouseY - height / 2;
+    let m;
+    if (cam.eyeY-cam.centerY === 0) {
+      m = -cam.centerY/0.000001;
+    } else {
+      m = -cam.centerY/(cam.eyeY-cam.centerY);
+    }
+    let posX = cam.centerX + m * (cam.eyeX-cam.centerX);
+    let posY = cam.centerZ + m * (cam.eyeZ-cam.centerZ);
+    let angle = atan((mouseY - height / 2)/(mouseX - width / 2));
+    let r = sqrt((mouseX - width / 2)*(mouseX - width / 2) + (mouseY - height / 2)*(mouseY - height / 2));
+    let theta = atan((cam.eyeZ-cam.centerZ)/(cam.eyeX-cam.centerX));
+    if ((cam.eyeX-cam.centerX) > 0) {
+      angle += theta-PI/2
+    } else {
+      angle += theta+PI/2
+    }
+    if ((mouseX - width / 2) >= 0) {
+      posX += r*cos(angle);
+      posY += r*sin(angle);
+    } else {
+      posX -= r*cos(angle);
+      posY -= r*sin(angle);
+    }
+    
     previewBuilding.setPosition(posX, posY);
     previewBuilding.checkOverlapBuilding(); // Verificar si se superpone con otro edificio
     //previewBuilding.checkOverlapRoad(); // Verificar si se superpone con otro edificio

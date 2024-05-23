@@ -1,7 +1,7 @@
 let scl = 20, gridX, gridY, gridZ, figuraActual, figuras = [], grid, horizontalFilled = false, filledList = [], timer;
 let tablero;
 let puntaje = 1; ///
-let nivel = 1;
+let nivel = 10;
 let myFont; ///
 let imagetetrislogo, imagewasd, imageflechas;
 let gameOver = false; ///
@@ -448,10 +448,10 @@ function isHorizontalFull(indexY) {
 
 function displayGameOver() {
     push();
-    translate(200, 300, 200); // Ajusta la posición Z para acercar el texto
+    translate(400, 300, 100); // Ajusta la posición Z para acercar el texto
     scale(1, -1);  // Invertir Y de nuevo para el texto
     fill(255, 0, 0);  // Color rojo
-    textSize(100);
+    textSize(50);
     rotateY(0.8);
     text("GAME OVER", -280, -20); 
     pop();
