@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Shader de Niebla con p5.js</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+</head>
+<body>
+  <div>
+    <label for="fogNearSlider">Fog Near:</label>
+    <input type="range" min="0" max="100" value="50" class="slider" id="fogNearSlider" onchange="updateFog()">
+  </div>
+  <div>
+    <label for="fogFarSlider">Fog Far:</label>
+    <input type="range" min="0" max="100" value="80" class="slider" id="fogFarSlider" onchange="updateFog()">
+  </div>
+  <script src="sketch.js"></script>
+</body>
+</html>
