@@ -8,6 +8,9 @@ let fogShader;
 let fogNear = 50.0;
 let fogFar = 200.0;
 
+let angleX = 0;
+let angleY = 0;
+
 function preload() {
   // Cargar el shader
   fogShader = loadShader('fog.vert', 'fog.frag');
@@ -24,6 +27,17 @@ function setup() {
 
 function draw() {
   background(200);
+
+   // Rotar la cámara
+   //let camX = map(0, 0, width, -200, 200);
+   let camX = -500;
+   //let camY = map(0, 0, height, -200, 200);
+   let camY = -100; 
+   camera(camX, camY, (height/2) / tan(PI/6), 0, 0, 0, 0, 1, 0);
+   
+   // Rotación de la escena
+   rotateX(angleX);
+   rotateY(angleY);
 
   // Usar el shader de niebla
   shader(fogShader);
@@ -54,3 +68,9 @@ function updateFog() {
   fogNear = map(document.getElementById('fogNearSlider').value, 0, 100, 0, 200);
   fogFar = map(document.getElementById('fogFarSlider').value, 0, 100, 0, 500);
 }
+
+// function mouseDragged() {
+//   // Incrementar los ángulos de rotación basados en el movimiento del mouse
+//   angleX += (mouseY - pmouseY) * 0.01;
+//   angleY += (mouseX - pmouseX) * 0.01;
+// }
