@@ -1,23 +1,22 @@
-precision highp float;
+#ifdef GL_ES
+precision mediump float;
+#endif
 
-// Entradas desde la aplicación
-attribute vec3 aPosition;
-attribute vec2 aTexCoord;
+varying vec4 vertColor;
+varying vec4 vertTexCoord;
 
-// Transformaciones
-uniform mat4 uModelViewMatrix;
-uniform mat4 uProjectionMatrix;
-
-// Salidas a los fragment shaders
-varying vec2 vTexCoord;
-varying vec4 vPosition;
+uniform sampler2D tex0;
+uniform float fogNear;
+uniform float fogFar;
 
 void main() {
-  // Transformar la posición del vértice
-  vec4 positionVec4 = uModelViewMatrix * vec4(aPosition, 1.0);
-  gl_Position = uProjectionMatrix * positionVec4;
+    // Calcular la distancia desde el fragmento hasta la cámara
+    float distToCamera = length(gl_FragCoord.xyz);
 
-  // Pasar los datos de textura al fragment shader
-  vTexCoord = aTexCoord;
-  vPosition = positionVec4;
+    // Calcular la cantidad de niebla
+    float fogAmount = smoothstep(fogNear, fogFar, distToCamera);
+
+    // Obtener el color de la textura y mezclar con la niebla
+    vec4 texColor = texture2D(tex0, vertTexCoord.st);
+    gl_FragColor = mix(texColor, vec4(texColor.rgb, 0.0), fogAmount);
 }
