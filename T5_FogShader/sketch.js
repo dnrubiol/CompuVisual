@@ -47,6 +47,13 @@ function setup() {
     for (let i = 0; i < numCubes; i++) {
         cubes.push(new Cube(i * ((cubeSize + 2) * 2))); // Espacio entre cubos
     }
+
+    // Crear los sliders de niebla
+    createP('Fog Near');
+    createSlider(0, 100, 50).input(updateFogNear);
+
+    createP('Fog Far');
+    createSlider(0, 100, 80).input(updateFogFar);
 }
 
 function draw() {
@@ -69,6 +76,9 @@ function draw() {
     fogShader.setUniform('fogNear', fogNear);
     fogShader.setUniform('fogFar', fogFar);
     fogShader.setUniform('tex0', textureCube); // Pasar la textura al shader
+
+    // Imprimir valores de uniformes para verificar
+    console.log(`fogNear: ${fogNear}, fogFar: ${fogFar}`);
 
     // Dibujar los cubos
     for (let cube of cubes) {
@@ -103,8 +113,12 @@ class Cube {
     }
 }
 
-// Función para manejar el cambio en los sliders de fogNear y fogFar
-function updateFog() {
-    fogNear = map(document.getElementById('fogNearSlider').value, 0, 100, 0, 200);
-    fogFar = map(document.getElementById('fogFarSlider').value, 0, 100, 0, 1000);
+function updateFogNear() {
+    fogNear = map(this.value(), 0, 100, 0, 200);
+    console.log(`Updated fogNear: ${fogNear}`);
+}
+
+function updateFogFar() {
+    fogFar = map(this.value(), 0, 100, 0, 1000);
+    console.log(`Updated fogFar: ${fogFar}`);
 }

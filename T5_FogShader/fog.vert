@@ -2,21 +2,17 @@
 precision mediump float;
 #endif
 
-varying vec4 vertColor;
-varying vec4 vertTexCoord;
+attribute vec3 aPosition;
+attribute vec2 aTexCoord;
 
-uniform sampler2D tex0;
-uniform float fogNear;
-uniform float fogFar;
+uniform mat4 uModelViewMatrix;
+uniform mat4 uProjectionMatrix;
+
+varying vec2 vTexCoord;
+varying vec4 vVertexPosition;
 
 void main() {
-    // Calcular la distancia desde el fragmento hasta la cámara
-    float distToCamera = length(gl_FragCoord.xyz);
-
-    // Calcular la cantidad de niebla
-    float fogAmount = smoothstep(fogNear, fogFar, distToCamera);
-
-    // Obtener el color de la textura y mezclar con la niebla
-    vec4 texColor = texture2D(tex0, vertTexCoord.st);
-    gl_FragColor = mix(texColor, vec4(texColor.rgb, 0.0), fogAmount);
+    vTexCoord = aTexCoord;
+    vVertexPosition = uModelViewMatrix * vec4(aPosition, 1.0);
+    gl_Position = uProjectionMatrix * vVertexPosition;
 }
