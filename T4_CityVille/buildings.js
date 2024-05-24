@@ -1,8 +1,9 @@
 class Building {
-    constructor(x, y, model) {
+    constructor(x, y, model, costo) {
       this.x = x;
       this.y = y;
       this.model = model;
+      this.costo = costo;
     }
     display() {
       // No need to implement here, each subclass will implement its own display()
@@ -25,8 +26,8 @@ class Building {
   
 
   class BuildingPreview extends Building {
-    constructor(x, y, model) {
-      super(x, y, model);
+    constructor(x, y, model, costo) {
+      super(x, y, model, costo);
       this.overlapBuilding = false; // Flag para indicar si se superpone con otro edificio
       this.overlapRoad = false; // Flag para indicar si se superpone con otro edificio
       this.rotationX = 0;
@@ -94,6 +95,7 @@ class Building {
         //fill(0, 0, 255); // Transparente azul
         scale(0.35,0.35,0.35);
         rotateZ(PI);
+        rotateY(PI);
         model(this.model);
       }
       //box(30, 100, 30);
