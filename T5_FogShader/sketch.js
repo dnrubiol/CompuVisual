@@ -20,6 +20,9 @@ let rotationSpeedX, rotationSpeedY, rotationSpeedZ;
 // Textura para todas las caras del cubo
 let textureCube;
 
+// Variable global para almacenar far de la perspectiva
+let perspectiveFar = 2000;
+
 function preload() {
     // Cargar el shader
     fogShader = loadShader('fog.vert', 'fog.frag');
@@ -40,8 +43,8 @@ function setup() {
     let fov = 0.9; // Ajustar el FOV para hacer zoom
     let aspect = width / height;
     let near = 1;
-    let far = 10000;
-    perspective(fov, aspect, near, far);
+    perspectiveFar = 2000; // asignar el valor inicial de far a la variable global
+    perspective(fov, aspect, near, perspectiveFar);
 
     // Crear los cubos con un espacio entre ellos
     for (let i = 0; i < numCubes; i++) {
@@ -49,10 +52,10 @@ function setup() {
     }
 
     // Crear los sliders de niebla
-    createP('Fog Near');
+    createP('FogNear:');
     createSlider(0, 100, 50).input(updateFogNear);
 
-    createP('Fog Far');
+    createP('FogFar:');
     createSlider(0, 100, 80).input(updateFogFar);
 }
 
@@ -120,5 +123,7 @@ function updateFogNear() {
 
 function updateFogFar() {
     fogFar = map(this.value(), 0, 100, 0, 1000);
+    perspectiveFar = map(this.value(), 0, 100, 0, 3000); // actualiza la variable global perspectiveFar
+    perspective(0.9, width / height, 1, perspectiveFar); // actualizar la perspectiva con el nuevo valor de far
     console.log(`Updated fogFar: ${fogFar}`);
 }
