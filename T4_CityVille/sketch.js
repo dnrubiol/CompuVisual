@@ -59,27 +59,49 @@ function setPreview() {
   // Actualizar la posición de la previsualización del edificio
   if (previewBuilding !== null) {
     let m;
-    if (cam.eyeY-cam.centerY === 0) {
+    //distancias entre la camara y el punto al que apunta la camara
+    let X = cam.eyeX - cam.centerX;
+    let Y = cam.eyeY - cam.centerY;
+    let Z = cam.eyeZ - cam.centerZ;
+    if (Y === 0) {
       m = -cam.centerY/0.000001;
     } else {
-      m = -cam.centerY/(cam.eyeY-cam.centerY);
+      m = -cam.centerY/Y;
     }
-    let posX = cam.centerX + m * (cam.eyeX-cam.centerX);
-    let posY = cam.centerZ + m * (cam.eyeZ-cam.centerZ);
-    let angle = atan((mouseY - height / 2)/(mouseX - width / 2));
+    //definir el punto en el plano (y = 0) que coincide con el centro de la pantalla
+    let posX = cam.centerX + m * X;
+    let posY = cam.centerZ + m * Z;
+    //distancia del cursor al centro de la pantalla
     let r = sqrt((mouseX - width / 2)*(mouseX - width / 2) + (mouseY - height / 2)*(mouseY - height / 2));
-    let theta = atan((cam.eyeZ-cam.centerZ)/(cam.eyeX-cam.centerX));
-    if ((cam.eyeX-cam.centerX) > 0) {
-      angle += theta-PI/2
+    //ajustar al zoom
+    r = r * (sqrt(Z * Z + X * X + Y * Y) / 800);
+    //ajustar segun la direccion que mira la camara
+    let angle = atan((mouseY - height / 2)/(mouseX - width / 2));
+    let theta;
+    if (X > 0) {
+      theta = atan(Z/X)-PI/2
     } else {
-      angle += theta+PI/2
+      theta = atan(Z/X)+PI/2
     }
+    angle += theta;
     if ((mouseX - width / 2) >= 0) {
       posX += r*cos(angle);
       posY += r*sin(angle);
     } else {
       posX -= r*cos(angle);
       posY -= r*sin(angle);
+    }
+    //ajustar a inclinacion de la camara
+    let tilt = atan(sqrt(Z * Z + X * X)/Y);
+    let a = (mouseY - height / 2) * sqrt(Z * Z + X * X + Y * Y) / 800;
+    //posX += a*cos(atan(Z/X))*sqrt(Z * Z + X * X)/Y;
+    //posY += a*sin(atan(Z/X))*sqrt(Z * Z + X * X)/Y;
+    if (X < 0) {
+      posX += a*cos(atan(Z/X))*sqrt(Z * Z + X * X)/Y;
+      posY += a*sin(atan(Z/X))*sqrt(Z * Z + X * X)/Y;
+    } else {
+      posX -= a*cos(atan(Z/X))*sqrt(Z * Z + X * X)/Y;
+      posY -= a*sin(atan(Z/X))*sqrt(Z * Z + X * X)/Y;
     }
     
     previewBuilding.setPosition(posX, posY);
