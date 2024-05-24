@@ -12,9 +12,9 @@ let angleX = 0;
 let angleY = 0;
 
 // Variables globales para la rotación
-let rotationAngleX = 0;
-let rotationAngleY = 0;
-let rotationAngleZ = 0;
+let rotationAnglesX = [];
+let rotationAnglesY = [];
+let rotationAnglesZ = [];
 let rotationSpeedX, rotationSpeedY, rotationSpeedZ;
 
 // Textura para todas las caras del cubo
@@ -39,6 +39,13 @@ function setup() {
     rotationSpeedY = 0.008;
     rotationSpeedZ = 0.008;
 
+    // Inicializar los ángulos de rotación
+    for (let i = 0; i < numCubes; i++) {
+        rotationAnglesX.push(0);
+        rotationAnglesY.push(0);
+        rotationAnglesZ.push(0);
+    }
+
     // Configurar la perspectiva de la cámara
     let fov = 0.9; // Ajustar el FOV para hacer zoom
     let aspect = width / height;
@@ -52,40 +59,50 @@ function setup() {
     }
 
     // Crear los sliders de niebla
-    createP('FogNear:');
-    createSlider(0, 100, 50).input(updateFogNear);
+    let fogNearLabel = createP('fogNear: 50');
+    let fogNearSlider = createSlider(0, 100, 50);
+    fogNearSlider.input(() => updateFogNear(fogNearLabel, fogNearSlider));
 
-    createP('FogFar:');
-    createSlider(0, 100, 80).input(updateFogFar);
+    let fogFarLabel = createP('fogFar: 100');
+    let fogFarSlider = createSlider(0, 100, 100);
+    fogFarSlider.input(() => updateFogFar(fogFarLabel, fogFarSlider));
 }
 
 function draw() {
     background(200);
 
     // Rotar la cámara
-    camera(-60, 0, 150, 0, 0, 120, 0, 1, 0); // Mover la cámara más cerca
+    camera(-40, 0, 150, 0, 0, 120, 0, 1, 0); // Mover la cámara más cerca
 
-    // Incrementar los ángulos de rotación globales
-    rotationAngleX += rotationSpeedX;
-    rotationAngleY += rotationSpeedY;
-    rotationAngleZ += rotationSpeedZ;
+    // Actualizar los ángulos de rotación globales para el último cubo
+    rotationAnglesX[numCubes - 1] += rotationSpeedX;
+    rotationAnglesY[numCubes - 1] += rotationSpeedY;
+    rotationAnglesZ[numCubes - 1] += rotationSpeedZ;
+
+    // Propagar la rotación a los otros cubos con un retraso tipo ola desde el primer cubo
+    for (let i = numCubes - 2; i >= 0; i--) {
+        rotationAnglesX[i] = rotationAnglesX[numCubes - 1] - sin((numCubes - 1 - i) * 0.1) * PI / 4;
+        rotationAnglesY[i] = rotationAnglesY[numCubes - 1] - sin((numCubes - 1 - i) * 0.1) * PI / 4;
+        rotationAnglesZ[i] = rotationAnglesZ[numCubes - 1] - sin((numCubes - 1 - i) * 0.1) * PI / 4;
+    }
 
     // Rotación de la escena
     rotateX(angleX);
     rotateY(angleY);
 
-    // Usar el shader de niebla
+    // Usar el shader de niebla para los cubos
     shader(fogShader);
     fogShader.setUniform('fogNear', fogNear);
     fogShader.setUniform('fogFar', fogFar);
+    fogShader.setUniform('fogFocus', [0, 0, 0]); // Establecer el punto de foco en el primer cubo
     fogShader.setUniform('tex0', textureCube); // Pasar la textura al shader
 
     // Imprimir valores de uniformes para verificar
     console.log(`fogNear: ${fogNear}, fogFar: ${fogFar}`);
 
-    // Dibujar los cubos
-    for (let cube of cubes) {
-        cube.display();
+    // Dibujar los cubos con el shader de niebla
+    for (let i = 0; i < numCubes; i++) {
+        cubes[i].display(rotationAnglesX[i], rotationAnglesY[i], rotationAnglesZ[i]);
     }
 }
 
@@ -95,14 +112,14 @@ class Cube {
         this.size = 58;
     }
 
-    display() {
+    display(rotationAngleX, rotationAngleY, rotationAngleZ) {
         // Guardar la posición actual de la matriz de transformación
         push();
 
         // Mover al centro del cubo
         translate(this.position.x, this.position.y, this.position.z);
 
-        // Aplicar rotación global
+        // Aplicar rotación con ángulos específicos
         rotateX(rotationAngleX);
         rotateY(rotationAngleY);
         rotateZ(rotationAngleZ);
@@ -116,14 +133,16 @@ class Cube {
     }
 }
 
-function updateFogNear() {
-    fogNear = map(this.value(), 0, 100, 0, 200);
+function updateFogNear(label, slider) {
+    fogNear = map(slider.value(), 0, 100, 0, 200);
+    label.html(`FogNear: ${slider.value()}`);
     console.log(`Updated fogNear: ${fogNear}`);
 }
 
-function updateFogFar() {
-    fogFar = map(this.value(), 0, 100, 0, 1000);
-    perspectiveFar = map(this.value(), 0, 100, 0, 3000); // actualiza la variable global perspectiveFar
+function updateFogFar(label, slider) {
+    fogFar = map(slider.value(), 0, 100, 0, 3000);
+    perspectiveFar = map(slider.value(), 0, 100, 0, 3000); // actualiza la variable global perspectiveFar
     perspective(0.9, width / height, 1, perspectiveFar); // actualizar la perspectiva con el nuevo valor de far
+    label.html(`FogFar: ${slider.value()}`);
     console.log(`Updated fogFar: ${fogFar}`);
 }

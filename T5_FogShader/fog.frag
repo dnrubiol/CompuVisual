@@ -2,29 +2,28 @@
 precision mediump float;
 #endif
 
-uniform float fogNear; // Distancia donde comienza la niebla
-uniform float fogFar; // Distancia donde termina la niebla
 uniform sampler2D tex0;
-
-varying vec2 vTexCoord;
-varying vec4 vVertexPosition;
+uniform float fogNear;
+uniform float fogFar;
+uniform vec3 fogFocus;
+varying vec4 vertColor;
+varying vec2 texCoord;
 
 void main() {
-    // Calcular la profundidad desde la posición del vértice
-    float depth = length(vVertexPosition.xyz);
+    // Calcular la distancia del fragmento al punto de foco
+    float distanceToFocus = distance(gl_FragCoord.xyz, vec3(fogFocus));
 
-    // Calcular la intensidad de la niebla
-    float fogFactor = smoothstep(fogNear, fogFar, depth);
+    // Calcular la intensidad de la niebla basada en la distancia al punto de foco
+    float fogFactor = smoothstep(fogNear, fogFar, distanceToFocus);
 
-    // Color de la niebla
-    vec3 fogColor = vec3(0.0, 0.0, 0.0);
+    // Color del cubo
+    vec4 texColor = texture2D(tex0, texCoord);
 
-    // Color del fragmento original
-    vec4 texColor = texture2D(tex0, vTexCoord);
+    // Color del fondo
+    vec4 backgroundColor = vec4(200.0/255.0, 200.0/255.0, 200.0/255.0, 1.0);
 
-    // Combinar el color de la niebla con el color del fragmento
-    vec3 finalColor = mix(fogColor, texColor.rgb, fogFactor);
+    // Mezclar el color del cubo con el color de la niebla
+    vec4 finalColor = mix(texColor, backgroundColor, fogFactor);
 
-    // Salida final
-    gl_FragColor = vec4(finalColor, texColor.a);
+    gl_FragColor = finalColor * vertColor;
 }
