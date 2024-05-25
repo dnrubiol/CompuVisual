@@ -119,7 +119,7 @@ function setPreview() {
 
     previewBuilding.setPosition(posX, posY);
     previewBuilding.checkOverlapBuilding(); // Verificar si se superpone con otro edificio
-    //previewBuilding.checkOverlapRoad(); // Verificar si se superpone con otro edificio
+    previewBuilding.checkOverlapRoad(); // Verificar si se superpone con una carretera
   }
 }
 function keyPressed() {
@@ -146,7 +146,7 @@ function keyPressed() {
 }
 
 function doubleClicked() {
-  if (previewBuilding !== null && !previewBuilding.overlapBuilding) {
+  if (previewBuilding !== null && !previewBuilding.overlapBuilding && !previewBuilding.overlapRoad) {
     buildings.push(previewBuilding);
     previewBuilding = null;
   } else {
@@ -281,13 +281,13 @@ function generarDinero() {
   let numTiendas = tiendas.length;
   if (numTiendas <= 5) {
     dinero += numTiendas * Math.random(25, 100) * 100;
-    console.log(dinero);
+    //console.log(dinero);
   } else if (numTiendas > 5 && numTiendas < 12) {
     dinero += numTiendas * Math.random(100, 300) * 100;
-    console.log(dinero);
+    //console.log(dinero);
   } else {
     dinero += numTiendas * Math.random(300, 550) * 100;
-    console.log(dinero);
+    //console.log(dinero);
   }
 }
 
@@ -300,11 +300,27 @@ class Road {
   }
 
   display() {
+    //push();
+    //stroke(100);
+    //strokeWeight(16);
+    //line(this.x1, 0, this.y1, this.x2, 0, this.y2);
+    //pop();
     push();
-    stroke(100);
-    strokeWeight(8);
-    line(this.x1, 0, this.y1, this.x2, 0, this.y2);
+    fill(100);
+    noStroke(); 
+    translate((this.x1 + this.x2)/2, 0, (this.y1 + this.y2)/2);
+    rotateY(-atan((this.y2 - this.y1)/(this.x2 - this.x1))+PI/2);
+    box(12,1,sqrt((this.y2 - this.y1) * (this.y2 - this.y1) + (this.x2 - this.x1) * (this.x2 - this.x1)));
+    translate(0, -0.1, 0); 
+    fill(140);
+    box(8,1,sqrt((this.y2 - this.y1) * (this.y2 - this.y1) + (this.x2 - this.x1) * (this.x2 - this.x1)));
     pop();
+  }
+
+  distanceToBuilding(building) {
+    let num = abs((this.x2 - this.x1) * (this.y1 - building.y) - (this.x1 - building.x) * (this.y2 - this.y1));
+    let den = sqrt((this.x2 - this.x1) * (this.x2 - this.x1) + (this.y2 - this.y1) * (this.y2 - this.y1));
+    return num / den;
   }
 }
 

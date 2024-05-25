@@ -15,9 +15,9 @@ class Building {
         return d < 39.5; // Distancia mínima para considerar que se superponen (ajusta según el tamaño de los edificios)
       }
 
-    overlapsRoad(other) {
-        let d = dist(this.x, this.y, other.x, other.y);
-        return d < 10; // Distancia mínima para considerar que se superponen (ajusta según el tamaño de los edificios)
+    overlapsRoad(road) {
+        let d = road.distanceToBuilding(this);
+        return d < 27.5; // Distancia mínima para considerar que se superponen (ajusta según el tamaño de los edificios)
       }
 
     rotate(){
@@ -31,7 +31,7 @@ class Building {
     constructor(x, y, model, costo) {
       super(x, y, model, costo);
       this.overlapBuilding = false; // Flag para indicar si se superpone con otro edificio
-      this.overlapRoad = false; // Flag para indicar si se superpone con otro edificio
+      this.overlapRoad = false; // Flag para indicar si se superpone con una carretera
       this.rotationX = 0;
     }
   
@@ -73,7 +73,7 @@ class Building {
     display() {
       push();
       translate(this.x, -16, this.y);
-      if (this.overlapBuilding) {
+      if (this.overlapBuilding || this.overlapRoad) {
         fill(255, 0, 0, 100); // Transparente rojo si se superpone
       } else {
         //fill(255, 0, 0);
@@ -92,7 +92,7 @@ class Building {
     display() {
       push();
       translate(this.x, -35, this.y);
-      if (this.overlapBuilding) {
+      if (this.overlapBuilding || this.overlapRoad) {
         fill(0, 0, 255, 100); // Transparente azul si se superpone
       } else {
         //fill(0, 0, 255); // Transparente azul
@@ -111,7 +111,7 @@ class Building {
     display() {
       push();
       translate(this.x, -9, this.y);
-      if (this.overlapBuilding) {
+      if (this.overlapBuilding || this.overlapRoad) {
         fill(0, 255, 0, 100); // Transparente verde si se superpone
       } else {
         //fill(0, 255, 0); // Transparente verde
