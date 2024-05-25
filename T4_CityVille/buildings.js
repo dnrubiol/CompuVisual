@@ -4,6 +4,7 @@ class Building {
       this.y = y;
       this.model = model;
       this.costo = costo;
+      this.rotation = 0;
     }
     display() {
       // No need to implement here, each subclass will implement its own display()
@@ -20,6 +21,7 @@ class Building {
       }
 
     rotate(){
+      this.rotation = (this.rotation+1)%4;
     }
   }
   
@@ -77,6 +79,7 @@ class Building {
         //fill(255, 0, 0);
         scale(0.2,0.2,0.2);
         rotateZ(PI);
+        rotateY(PI*this.rotation/2);
         model(this.model);
       }
       //box(30, 30, 30);
@@ -95,7 +98,7 @@ class Building {
         //fill(0, 0, 255); // Transparente azul
         scale(0.35,0.35,0.35);
         rotateZ(PI);
-        rotateY(PI);
+        rotateY(PI+PI*this.rotation/2);
         model(this.model);
       }
       //box(30, 100, 30);
@@ -114,6 +117,7 @@ class Building {
         //fill(0, 255, 0); // Transparente verde
         scale(0.2,0.2,0.2);
         rotateZ(PI);
+        rotateY(PI*this.rotation/2);
         model(this.model);
       }
       //box(50, 30, 30);

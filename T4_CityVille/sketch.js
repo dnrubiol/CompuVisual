@@ -21,7 +21,7 @@ function preload() {
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   cam = createCamera();
-  cam.ortho(-width / 2, width / 2, -height / 2, height / 2, 80, 99000000);
+  cam.ortho(-width / 2, width / 2, -height / 2, height / 2, 5, 99000000);
   textFont(font);
 
   //cam.ortho();
@@ -138,7 +138,11 @@ function keyPressed() {
     mensajeVisible = true;
     showTempMessage();
     buildingType = "Edificio";
-  }
+  } else if (keyCode === 32) {
+    if (previewBuilding != null) {
+      previewBuilding.rotate();
+    }
+  };
 }
 
 function doubleClicked() {
@@ -213,6 +217,7 @@ function drawInterface() {
     100
   );
   interfaz.text("Para construir da doble clic", 10, 130);
+  interfaz.text("Para rotar el edificio presiona espacio", 10, 150);
   if (mensajeVisible) {
     push();
     fill(180);
