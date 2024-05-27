@@ -11,11 +11,13 @@ let interDinero;
 let dinero = 1000;
 let font;
 let tiendas = [];
+let texRoad;
 function preload() {
   houseModel = loadModel("models/Casa residencial.obj", true);
   skyScrapperModel = loadModel("models/edificioAlto.obj", true);
   shopModel = loadModel("models/tienda.obj", true);
   font = loadFont("SANTELLO.ttf");
+  texRoad = loadImage("textures/road1.jpg");
 }
 
 function setup() {
@@ -29,10 +31,10 @@ function setup() {
   interDinero = createGraphics(300, 200);
 
   for (let i = -200; i <= 200; i += 100) {
-    roads.push(new Road(i, -200, i, 200));
+    roads.push(new Road(i, -200, i, 200, texRoad));
   }
   for (let i = -200; i <= 200; i += 100) {
-    roads.push(new Road(-200, i, 200, i));
+    roads.push(new Road(-200, i, 200, i, texRoad));
   }
   setInterval(generarDinero, 7000);
 }
@@ -42,7 +44,14 @@ function draw() {
   // Control de la cámara con el mouse
   orbitControl();
 
-  // Actualizar y mostrar los edificios
+  ambientLight(60);
+
+  // Configurar la luz direccional para simular el sol
+  let dirX = (mouseX / width - 0.5) * 2;
+  let dirY = (mouseY / height - 0.5) * 2;
+  directionalLight(255, 255, 255, -dirX, -dirY, -1);
+
+  noStroke();
   for (let road of roads) {
     road.display();
   }
@@ -54,8 +63,7 @@ function draw() {
     previewBuilding.display();
   }
   setPreview();
-  drawInterface();  
-  
+  drawInterface();
 }
 
 function showTempMessage() {
@@ -142,11 +150,15 @@ function keyPressed() {
     if (previewBuilding != null) {
       previewBuilding.rotate();
     }
-  };
+  }
 }
 
 function doubleClicked() {
-  if (previewBuilding !== null && !previewBuilding.overlapBuilding && !previewBuilding.overlapRoad) {
+  if (
+    previewBuilding !== null &&
+    !previewBuilding.overlapBuilding &&
+    !previewBuilding.overlapRoad
+  ) {
     buildings.push(previewBuilding);
     previewBuilding = null;
   } else {
@@ -292,11 +304,12 @@ function generarDinero() {
 }
 
 class Road {
-  constructor(x1, y1, x2, y2) {
+  constructor(x1, y1, x2, y2, textura) {
     this.x1 = x1;
     this.y1 = y1;
     this.x2 = x2;
     this.y2 = y2;
+    this.textura = textura;
   }
 
   display() {
@@ -306,21 +319,41 @@ class Road {
     //line(this.x1, 0, this.y1, this.x2, 0, this.y2);
     //pop();
     push();
-    fill(100);
-    noStroke(); 
-    translate((this.x1 + this.x2)/2, 0, (this.y1 + this.y2)/2);
-    rotateY(-atan((this.y2 - this.y1)/(this.x2 - this.x1))+PI/2);
-    box(12,1,sqrt((this.y2 - this.y1) * (this.y2 - this.y1) + (this.x2 - this.x1) * (this.x2 - this.x1)));
-    translate(0, -0.1, 0); 
-    fill(140);
-    box(8,1,sqrt((this.y2 - this.y1) * (this.y2 - this.y1) + (this.x2 - this.x1) * (this.x2 - this.x1)));
+    //fill(100);
+    texture(this.textura);
+    noStroke();
+    translate((this.x1 + this.x2) / 2, 0, (this.y1 + this.y2) / 2);
+    rotateY(-atan((this.y2 - this.y1) / (this.x2 - this.x1)) + PI / 2);
+    box(
+      12,
+      1,
+      sqrt(
+        (this.y2 - this.y1) * (this.y2 - this.y1) +
+          (this.x2 - this.x1) * (this.x2 - this.x1)
+      )
+    );
+    translate(0, -0.1, 0);
+    //fill(140);
+    box(
+      8,
+      1,
+      sqrt(
+        (this.y2 - this.y1) * (this.y2 - this.y1) +
+          (this.x2 - this.x1) * (this.x2 - this.x1)
+      )
+    );
     pop();
   }
 
   distanceToBuilding(building) {
-    let num = abs((this.x2 - this.x1) * (this.y1 - building.y) - (this.x1 - building.x) * (this.y2 - this.y1));
-    let den = sqrt((this.x2 - this.x1) * (this.x2 - this.x1) + (this.y2 - this.y1) * (this.y2 - this.y1));
+    let num = abs(
+      (this.x2 - this.x1) * (this.y1 - building.y) -
+        (this.x1 - building.x) * (this.y2 - this.y1)
+    );
+    let den = sqrt(
+      (this.x2 - this.x1) * (this.x2 - this.x1) +
+        (this.y2 - this.y1) * (this.y2 - this.y1)
+    );
     return num / den;
   }
 }
-
