@@ -284,6 +284,7 @@ function drawInterface() {
     rotateX(atan(Y / sqrt(Z * Z + X * X)) + PI);
   }
   translate(-windowWidth / 2, -windowHeight / 2);
+  translate(0,0,500);
   image(interfaz, 0, 0);
   pop();
 }
@@ -356,4 +357,19 @@ class Road {
     );
     return num / den;
   }
+}
+
+// no esta en uso
+function renderFloor(){
+  push();
+    fill(0,255,0);
+    noStroke();
+    translate(cam.eyeX, 0, cam.eyeZ);
+    rotateY(-atan((cam.eyeZ - cam.centerZ) / (cam.eyeX - cam.centerX)) + PI / 2);
+    box(
+      100000,
+      1,
+      100000
+    );
+    pop();
 }

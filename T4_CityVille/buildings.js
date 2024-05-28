@@ -75,6 +75,10 @@ class Building {
       translate(this.x, -16, this.y);
       if (this.overlapBuilding || this.overlapRoad) {
         fill(255, 0, 0, 100); // Transparente rojo si se superpone
+        scale(0.2,0.2,0.2);
+        rotateZ(PI);
+        rotateY(PI*this.rotation/2);
+        model(this.model);
       } else {
         fill(161, 130, 100);
         scale(0.2,0.2,0.2);
@@ -93,7 +97,11 @@ class Building {
       push();
       translate(this.x, -35, this.y);
       if (this.overlapBuilding || this.overlapRoad) {
-        fill(0, 0, 255, 100); // Transparente azul si se superpone
+        fill(255, 0, 0, 100); // Transparente rojo si se superpone
+        scale(0.2,0.2,0.2);
+        rotateZ(PI);
+        rotateY(PI*this.rotation/2);
+        model(this.model);
       } else {
         fill(155, 155, 155); // Transparente azul
         scale(0.35,0.35,0.35);
@@ -112,7 +120,11 @@ class Building {
       push();
       translate(this.x, -9, this.y);
       if (this.overlapBuilding || this.overlapRoad) {
-        fill(0, 255, 0, 100); // Transparente verde si se superpone
+        fill(255, 0, 0, 100); // Transparente rojo si se superpone
+        scale(0.2,0.2,0.2);
+        rotateZ(PI);
+        rotateY(PI*this.rotation/2);
+        model(this.model);
       } else {
         fill(200, 200, 0); // Transparente verde
         scale(0.2,0.2,0.2);
