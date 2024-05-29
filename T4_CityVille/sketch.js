@@ -229,7 +229,8 @@ function drawInterface() {
     100
   );
   interfaz.text("Para construir da doble clic", 10, 130);
-  interfaz.text("Para rotar el edificio presiona espacio", 10, 150);
+  interfaz.text("Para rotar el edificio presiona espacio", 10, 160);
+  interfaz.text("Para ganar dinero deberás construir tiendas.", 10, 190);
   if (mensajeVisible) {
     push();
     fill(180);
