@@ -1,0 +1,36 @@
+{
+  "modelName": "texture",
+  "name": "zapatilla",
+  "identifier": "texture:3145-47e87be5-b115-476c-baae-6ab1df9f26c4",
+  "alphaPremultiplicationMode": "should_premultiply",
+  "assetDataHash": "a5c1ad3af643b4eb4033cbe5b9d6556c",
+  "assetLocator": "textures/zapatilla.png",
+  "colorEncoding": "linear",
+  "compressionQuality": "high",
+  "coordMapping": "none",
+  "excludeDuringExport": false,
+  "excludeFromPackage": false,
+  "filter": "bilinear",
+  "hasOfflineMipmaps": false,
+  "height": 1024,
+  "importIssues": {},
+  "isExternalAsset": true,
+  "smartTextureTargetSizeLimit": "largest",
+  "targetSize": "largest",
+  "uWrapMode": "clamp",
+  "vWrapMode": "clamp",
+  "width": 1024,
+  "children": [
+    {
+      "modelName": "data_texture_metadata_model",
+      "name": "data_texture_metadata_model0",
+      "assetDataHash": "a5c1ad3af643b4eb4033cbe5b9d6556c",
+      "colorCount": 256,
+      "detectedAlphaChannel": "eight_bit_full_range",
+      "detectedOriginalFormat": "png",
+      "entropyOfDistribution": 0.46782731871336164,
+      "pixelsHigh": 1024,
+      "pixelsWide": 1024
+    }
+  ]
+}
