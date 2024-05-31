@@ -136,16 +136,24 @@ function keyPressed() {
     mensajeVisible = true;
     showTempMessage();
     buildingType = "Tienda";
+    previewBuilding = new ShopPreview(mouseX - width / 2, mouseY - height / 2, shopModel, 400);
   } else if (keyCode === 67) {
     message = "Construcción cambiada a CASA";
     mensajeVisible = true;
     showTempMessage();
     buildingType = "Casa";
+    previewBuilding = new HousePreview(mouseX - width / 2, mouseY - height / 2, houseModel, 600);
   } else if (keyCode === 69) {
     message = "Construcción cambiada a EDIFICIO";
     mensajeVisible = true;
     showTempMessage();
     buildingType = "Edificio";
+    previewBuilding = new SkyscraperPreview(
+      mouseX - width / 2,
+      mouseY - height / 2,
+      skyScrapperModel,
+      1200
+    );
   } else if (keyCode === 32) {
     if (previewBuilding != null) {
       previewBuilding.rotate();
@@ -159,48 +167,15 @@ function doubleClicked() {
     !previewBuilding.overlapBuilding &&
     !previewBuilding.overlapRoad
   ) {
-    buildings.push(previewBuilding);
-    previewBuilding = null;
-  } else {
-    // Crear la previsualización del edificio en la posición del mouse
-    let posX = mouseX - width / 2;
-    let posY = mouseY - height / 2;
-    switch (buildingType) {
-      case "Casa":
-        if (dinero >= 600) {
-          previewBuilding = new HousePreview(posX, posY, houseModel, 600);
-          dinero -= 600;
-        } else {
-          message = "Dinero insuficiente";
-          mensajeVisible = true;
-          showTempMessage();
-        }
-        break;
-      case "Edificio":
-        if (dinero >= 1200) {
-          previewBuilding = new SkyscraperPreview(
-            posX,
-            posY,
-            skyScrapperModel,
-            1200
-          );
-          dinero -= 1200;
-        } else {
-          message = "Dinero insuficiente";
-          mensajeVisible = true;
-          showTempMessage();
-        }
-        break;
-      case "Tienda":
-        if (dinero >= 400) {
-          previewBuilding = new ShopPreview(posX, posY, shopModel, 400);
-          dinero -= 400;
-        } else {
-          message = "Dinero insuficiente";
-          mensajeVisible = true;
-          showTempMessage();
-        }
-        break;
+    if (dinero >= previewBuilding.costo) {
+      buildings.push(previewBuilding);
+      dinero -= previewBuilding.costo;
+      previewBuilding = null;
+      buildingType = null;
+    } else {
+      message = "Dinero insuficiente";
+      mensajeVisible = true;
+      showTempMessage();
     }
   }
 }
@@ -348,6 +323,14 @@ class Road {
   }
 
   distanceToBuilding(building) {
+    let distAtoBsqr = (this.x1 - building.x) * (this.x1 - building.x) + (this.y1 - building.y) * (this.y1 - building.y);
+    let distAtoCsqr = (this.x2 - building.x) * (this.x2 - building.x) + (this.y2 - building.y) * (this.y2 - building.y);
+    let distBtoCsqr = (this.x1 - this.x2) * (this.x1 - this.x2) + (this.y1 - this.y2) * (this.y1 - this.y2);
+    if (distAtoCsqr > distAtoBsqr + distBtoCsqr) {
+      return sqrt(distAtoBsqr);
+    } else if (distAtoBsqr > distAtoCsqr + distBtoCsqr) {
+      return sqrt(distAtoCsqr);
+    }
     let num = abs(
       (this.x2 - this.x1) * (this.y1 - building.y) -
         (this.x1 - building.x) * (this.y2 - this.y1)
