@@ -94,7 +94,7 @@ function draw() {
     shader(fogShader);
     fogShader.setUniform('fogNear', fogNear);
     fogShader.setUniform('fogFar', fogFar);
-    fogShader.setUniform('fogFocus', [0, 0, 0]); // Establecer el punto de foco en el primer cubo
+    fogShader.setUniform('fogFocus', [0.0, 0.0, 0.0]); // Establecer el punto de foco en el primer cubo
     fogShader.setUniform('tex0', textureCube); // Pasar la textura al shader
 
     // Imprimir valores de uniformes para verificar

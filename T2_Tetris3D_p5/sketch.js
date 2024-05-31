@@ -1,10 +1,11 @@
 let scl = 20, gridX, gridY, gridZ, figuraActual, figuras = [], grid, horizontalFilled = false, filledList = [], timer;
 let tablero;
 let puntaje = 1; ///
-let nivel = 10;
+let nivel = 1;
 let myFont; ///
 let imagetetrislogo, imagewasd, imageflechas;
 let gameOver = false; ///
+let cam;
 
 function preload() {
     myFont = loadFont('Micro5.ttf');    
@@ -25,11 +26,13 @@ function getBoard(x,y,z) {
 
 function setup() {
     createCanvas(780, 580, WEBGL);
-    gridX = 8;
+    gridX = 6;
     gridY = 16;
-    gridZ = 8;
+    gridZ = 6;
     tablero = getBoard(gridX,gridY,gridZ);
-    camera(600,-400,600,0,-170,10);
+    cam = createCamera();
+    cam.setPosition(600,-400,600);
+    cam.lookAt(0,-170,10);
     //figuraActual = new SShape(floor(gridX/2)-1,gridY,floor(gridZ/2)-1);
     figuraActual = generarFiguras();    
     textFont(myFont);  
@@ -55,7 +58,7 @@ function draw() {
   
     if (filledList.length === 0) {
         // Este if se ejecuta para cada figura actual
-        if (frameCount % Math.ceil(20/nivel) == 0) {
+        if (frameCount % Math.ceil(40*pow(0.75,nivel-1)) == 0) {
             if (verificarColision("abajo") ) {
                 figuraActual.posY -= 1;
             } else {
@@ -368,18 +371,18 @@ function tryMoveAndRotate(eje) {
 
 function keyPressed() {
     // Rotaciones
-    if (keyCode === UP_ARROW) {
+    if (keyCode === RIGHT_ARROW) {
         tryMoveAndRotate('X');
-    } else if (keyCode === RIGHT_ARROW) {
+    } else if (keyCode === UP_ARROW) {
         tryMoveAndRotate('Y');
     } else if (keyCode === LEFT_ARROW) {
         tryMoveAndRotate('Z');
     }
     // Desplazamientos
     else if (key === 'w' || key === 'W') {
-        moveForward();
-    } else if (key === 's' || key === 'S') {
         moveBackward();
+    } else if (key === 's' || key === 'S') {
+        moveForward();
     } else if (key === 'a' || key === 'A') {
         moveLeft();
     } else if (key === 'd' || key === 'D') {
@@ -388,6 +391,9 @@ function keyPressed() {
 }
 
 function drawGridLines() {
+    push();
+    stroke(255,255,255,80);
+
     // Grid guia en el plano XZ
     for (let i = 0; i <= gridX; i++) {
         line(i*scl,0,0,i*scl,0,gridZ*scl);
@@ -397,20 +403,106 @@ function drawGridLines() {
     }
 
     // Grid guia en el plano XY
-    for (let i = 0; i <= gridX; i++) {
-        line(i*scl,0,0,i*scl,gridY*scl,0);
-    }
-    for (let i = 0; i <= gridY; i++) {
-        line(0,i*scl,0,gridX*scl,i*scl,0);
+    if (cam.eyeZ >= 0) {
+        for (let i = 0; i <= gridX; i++) {
+            line(i*scl,0,0,i*scl,gridY*scl,0);
+        }
+        for (let i = 0; i <= gridY; i++) {
+            line(0,i*scl,0,gridX*scl,i*scl,0);
+        }
+        for (let i = ((figuraActual.shape.length)-1); i >= 0; i--) {
+            for (let j = ((figuraActual.shape[0].length)-1); j >= 0; j--) {
+                for (let k = ((figuraActual.shape[0][0].length)-1); k >=0; k--) {
+                    if (figuraActual.shape[i][j][k] && j+figuraActual.posY <= gridY) {
+                        push();
+                        stroke(figuraActual.color);
+                        strokeWeight(2);
+                        line((k+figuraActual.posX)*scl,(j+figuraActual.posY)*scl,0,(k+figuraActual.posX+1)*scl,(j+figuraActual.posY)*scl,0);
+                        line((k+figuraActual.posX)*scl,(j+figuraActual.posY+1)*scl,0,(k+figuraActual.posX+1)*scl,(j+figuraActual.posY+1)*scl,0);
+                        line((k+figuraActual.posX)*scl,(j+figuraActual.posY)*scl,0,(k+figuraActual.posX)*scl,(j+figuraActual.posY+1)*scl,0);
+                        line((k+figuraActual.posX+1)*scl,(j+figuraActual.posY)*scl,0,(k+figuraActual.posX+1)*scl,(j+figuraActual.posY+1)*scl,0);
+                        pop();
+                    }
+                }
+            }
+        }
+    } 
+    if (cam.eyeZ <= gridZ*scl) {
+        for (let i = 0; i <= gridX; i++) {
+            line(i*scl,0,gridZ*scl,i*scl,gridY*scl,gridZ*scl);
+        }
+        for (let i = 0; i <= gridY; i++) {
+            line(0,i*scl,gridZ*scl,gridX*scl,i*scl,gridZ*scl);
+        }
+        for (let i = ((figuraActual.shape.length)-1); i >= 0; i--) {
+            for (let j = ((figuraActual.shape[0].length)-1); j >= 0; j--) {
+                for (let k = ((figuraActual.shape[0][0].length)-1); k >=0; k--) {
+                    if (figuraActual.shape[i][j][k] && j+figuraActual.posY <= gridY) {
+                        push();
+                        stroke(figuraActual.color);
+                        strokeWeight(2);
+                        line((k+figuraActual.posX)*scl,(j+figuraActual.posY)*scl,gridZ*scl,(k+figuraActual.posX+1)*scl,(j+figuraActual.posY)*scl,gridZ*scl);
+                        line((k+figuraActual.posX)*scl,(j+figuraActual.posY+1)*scl,gridZ*scl,(k+figuraActual.posX+1)*scl,(j+figuraActual.posY+1)*scl,gridZ*scl);
+                        line((k+figuraActual.posX)*scl,(j+figuraActual.posY)*scl,gridZ*scl,(k+figuraActual.posX)*scl,(j+figuraActual.posY+1)*scl,gridZ*scl);
+                        line((k+figuraActual.posX+1)*scl,(j+figuraActual.posY)*scl,gridZ*scl,(k+figuraActual.posX+1)*scl,(j+figuraActual.posY+1)*scl,gridZ*scl);
+                        pop();
+                    }
+                }
+            }
+        }
     }
 
     // Grid guia en el plano YZ
-    for (let i = 0; i <= gridY; i++) {
-        line(0,i*scl,0,0,i*scl,gridZ*scl);
+    if (cam.eyeX >= 0) {
+        for (let i = 0; i <= gridY; i++) {
+            line(0,i*scl,0,0,i*scl,gridZ*scl);
+        }
+        for (let i = 0; i <= gridZ; i++) {
+            line(0,0,i*scl,0,gridY*scl,i*scl);
+        }
+
+        for (let i = ((figuraActual.shape.length)-1); i >= 0; i--) {
+            for (let j = ((figuraActual.shape[0].length)-1); j >= 0; j--) {
+                for (let k = ((figuraActual.shape[0][0].length)-1); k >=0; k--) {
+                    if (figuraActual.shape[i][j][k] && j+figuraActual.posY <= gridY) {
+                        push();
+                        stroke(figuraActual.color);
+                        strokeWeight(2);
+                        line(0,(j+figuraActual.posY)*scl,(i+figuraActual.posZ)*scl,0,(j+figuraActual.posY)*scl,(i+figuraActual.posZ+1)*scl);
+                        line(0,(j+figuraActual.posY+1)*scl,(i+figuraActual.posZ)*scl,0,(j+figuraActual.posY+1)*scl,(i+figuraActual.posZ+1)*scl);
+                        line(0,(j+figuraActual.posY)*scl,(i+figuraActual.posZ)*scl,0,(j+figuraActual.posY+1)*scl,(i+figuraActual.posZ)*scl);
+                        line(0,(j+figuraActual.posY)*scl,(i+figuraActual.posZ+1)*scl,0,(j+figuraActual.posY+1)*scl,(i+figuraActual.posZ+1)*scl);
+                        pop();
+                    }
+                }
+            }
+        }
+    } 
+    if (cam.eyeX <= gridX*scl) {
+        for (let i = 0; i <= gridY; i++) {
+            line(gridX*scl,i*scl,0,gridX*scl,i*scl,gridZ*scl);
+        }
+        for (let i = 0; i <= gridZ; i++) {
+            line(gridX*scl,0,i*scl,gridX*scl,gridY*scl,i*scl);
+        }
+        for (let i = ((figuraActual.shape.length)-1); i >= 0; i--) {
+            for (let j = ((figuraActual.shape[0].length)-1); j >= 0; j--) {
+                for (let k = ((figuraActual.shape[0][0].length)-1); k >=0; k--) {
+                    if (figuraActual.shape[i][j][k] && j+figuraActual.posY <= gridY) {
+                        push();
+                        stroke(figuraActual.color);
+                        strokeWeight(2);
+                        line(gridX*scl,(j+figuraActual.posY)*scl,(i+figuraActual.posZ)*scl,gridX*scl,(j+figuraActual.posY)*scl,(i+figuraActual.posZ+1)*scl);
+                        line(gridX*scl,(j+figuraActual.posY+1)*scl,(i+figuraActual.posZ)*scl,gridX*scl,(j+figuraActual.posY+1)*scl,(i+figuraActual.posZ+1)*scl);
+                        line(gridX*scl,(j+figuraActual.posY)*scl,(i+figuraActual.posZ)*scl,gridX*scl,(j+figuraActual.posY+1)*scl,(i+figuraActual.posZ)*scl);
+                        line(gridX*scl,(j+figuraActual.posY)*scl,(i+figuraActual.posZ+1)*scl,gridX*scl,(j+figuraActual.posY+1)*scl,(i+figuraActual.posZ+1)*scl);
+                        pop();
+                    }
+                }
+            }
+        }
     }
-    for (let i = 0; i <= gridZ; i++) {
-        line(0,0,i*scl,0,gridY*scl,i*scl);
-    }
+    pop();
 }
 
 function renderGrid() {
@@ -423,7 +515,7 @@ function renderGrid() {
                     if (filledList.includes(indexI)) {
                         fill(0, (sin(frameCount/2)+1)/2*255, 0);
                     } else {
-                        fill(0, 0, 255); // Azul
+                        fill(10, 180, 230); // Azul
                     }
                     translate(k * scl, indexI * scl, j * scl); // Ajustamos la altura
                     box(scl);
