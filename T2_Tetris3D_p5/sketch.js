@@ -1,6 +1,6 @@
 let scl = 20, gridX, gridY, gridZ, figuraActual, figuras = [], grid, horizontalFilled = false, filledList = [], timer;
 let tablero;
-let puntaje = 1; ///
+let puntaje = 0; ///
 let nivel = 1;
 let myFont; ///
 let imagetetrislogo, imagewasd, imageflechas;
@@ -92,31 +92,41 @@ function draw() {
         displayGameOver();
     }
 
+    push();
+    let X = cam.eyeX - cam.centerX;
+    let Y = cam.eyeY - cam.centerY;
+    let Z = cam.eyeZ - cam.centerZ;
+    scale(1, -1);
+    translate(cam.centerX, cam.centerY, cam.centerZ);
+    if (Z > 0) {
+        rotateY(atan(X / Z));
+    } else {
+        rotateY(atan(X / Z) + PI);
+    }
+    if (cam.upY > 0) {
+        rotateX(atan(-Y / sqrt(Z * Z + X * X)));
+    } else {
+        rotateY(PI);
+        rotateX(atan(Y / sqrt(Z * Z + X * X)) + PI);
+    }
     /// Mostrar el puntaje y nivel
     push();
-    scale(1, -1);  // Invertir Y de nuevo para el texto
     fill(255);  // Color blanco
-    rotateY(0.8);
     textSize(70);
-    text("PUNTAJE: " + puntaje + "  NIVEL: " + nivel, -230, -370); 
+    text("PUNTAJE: " + puntaje + "  NIVEL: " + nivel, -230, -200); 
     pop();
 
     push(); //tetris logo
-    scale(1, -1);
-    rotateY(0.8);
-    image(imagetetrislogo, -420, -320, 280, 450);
+    image(imagetetrislogo, -420, -150, 280, 450);
     pop();
 
     push(); //instrucciones wasd
-    scale(1, -1);
-    rotateY(0.8);
-    image(imagewasd, 160, -280, 180, 150);
+    image(imagewasd, 160, -110, 180, 150);
     pop();
 
     push(); //instrucciones flechas
-    scale(1, -1);
-    rotateY(0.8);
-    image(imageflechas, 160, -120, 180, 150);
+    image(imageflechas, 160, 50, 180, 150);
+    pop();
     pop();
 }
 
@@ -540,11 +550,25 @@ function isHorizontalFull(indexY) {
 
 function displayGameOver() {
     push();
-    translate(400, 300, 100); // Ajusta la posición Z para acercar el texto
-    scale(1, -1);  // Invertir Y de nuevo para el texto
+    let X = cam.eyeX - cam.centerX;
+    let Y = cam.eyeY - cam.centerY;
+    let Z = cam.eyeZ - cam.centerZ;
+    scale(1, -1);
+    translate(cam.centerX, cam.centerY, cam.centerZ);
+    if (Z > 0) {
+        rotateY(atan(X / Z));
+    } else {
+        rotateY(atan(X / Z) + PI);
+    }
+    if (cam.upY > 0) {
+        rotateX(atan(-Y / sqrt(Z * Z + X * X)));
+    } else {
+        rotateY(PI);
+        rotateX(atan(Y / sqrt(Z * Z + X * X)) + PI);
+    }
+    translate(203, 0, 500); // Ajusta la posición Z para acercar el texto
     fill(255, 0, 0);  // Color rojo
     textSize(50);
-    rotateY(0.8);
     text("GAME OVER", -280, -20); 
     pop();
 }
